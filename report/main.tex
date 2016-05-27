@@ -1,0 +1,328 @@
+\documentclass{article}
+\usepackage{overcite}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{subfigure}
+\usepackage{listings} 
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{fancyhdr}
+\usepackage{multirow}
+\usepackage{extramarks}
+\usepackage{chngpage}
+\usepackage{color}
+\usepackage{graphicx,float}
+\usepackage{indentfirst}
+\usepackage{bibentry,natbib}
+\theoremstyle{plain} \newtheorem{theorem}{常识}[section]
+\theoremstyle{plain} \newtheorem{lizi}{例}[section]
+\newcommand{\Class}{Mathematics for Computer Science}
+
+% Homework Specific Information. Change it to your own
+\newcommand{\Title}{Homework 3}
+\newcommand{\StudentName}{Huang Zhiao}
+\newcommand{\StudentClass}{JK 40}
+\newcommand{\StudentNumber}{2014011345}
+
+% In case you need to adjust margins:
+\topmargin=-0.45in      %
+\evensidemargin=0in     %
+\oddsidemargin=0in      %
+\textwidth=6.5in        %
+\textheight=9.0in       %
+\headsep=0.25in         %
+
+% Setup the header and footer
+%\pagestyle{fancy}                                                       %
+\lhead{\StudentName}                                                    %
+\chead{\Title}                                                          %
+\rhead{\firstxmark}                                                     %
+\lfoot{\lastxmark}                                                      %
+\cfoot{}                                                                %
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}}                  %
+\renewcommand\headrulewidth{0.4pt}                                      %
+\renewcommand\footrulewidth{0.4pt}                                      %
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some tools
+\newcommand{\enterProblemHeader}[1]{\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak%
+                                    \nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak}%
+\newcommand{\exitProblemHeader}[1]{\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak%
+                                   \nobreak\extramarks{#1}{}\nobreak}%
+
+\newcommand{\homeworkProblemName}{}%
+\newcounter{homeworkProblemCounter}%
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]%
+  {\stepcounter{homeworkProblemCounter}%
+   \renewcommand{\homeworkProblemName}{#1}%
+   \section*{\homeworkProblemName}%
+   \enterProblemHeader{\homeworkProblemName}}%
+  {\exitProblemHeader{\homeworkProblemName}}%
+
+\newcommand{\homeworkSectionName}{}%
+\newlength{\homeworkSectionLabelLength}{}%
+\newenvironment{homeworkSection}[1]%
+  {% We put this space here to make sure we're not connected to the above.
+
+   \renewcommand{\homeworkSectionName}{#1}%
+   \settowidth{\homeworkSectionLabelLength}{\homeworkSectionName}%
+   \addtolength{\homeworkSectionLabelLength}{0.25in}%
+   \changetext{}{-\homeworkSectionLabelLength}{}{}{}%
+   \subsection*{\homeworkSectionName}%
+   \enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]}}%
+  {\enterProblemHeader{\homeworkProblemName}%
+
+   % We put the blank space above in order to make sure this margin
+   % change doesn't happen too soon.
+   \changetext{}{+\homeworkSectionLabelLength}{}{}{}}%
+
+\newcommand{\Answer}{\ \\\textbf{Answer:} }
+\newcommand{\Proof}{\ \\\textbf{Proof:} }
+\newcommand{\Acknowledgements}[1]{\ \\{\bf Acknowledgements:} #1}
+\newcommand{\Infer}{\Longrightarrow}
+\newcommand{\ud}{\mathrm{d}}
+\newcommand{\Reduce}{\Longleftarrow}
+\newcommand{\Endproof}{\hfill $\Box$ \\}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Make title
+\title{\textmd{\bf \Class: \Title}\\\normalsize\vspace{0.1in}}
+%\date{} % --- if you de-comment \date{}, the date will not appear below the title
+\author{\textbf{\StudentName}\ \ \StudentNumber}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[colorlinks,linkcolor=red]{hyperref}
+
+
+\usepackage[]{xeCJK}
+%\setmainfont{Courier New} % 设置英文衬线字体
+%\setCJKmainfont{} % 设置缺省中文字体
+
+
+\begin{document}
+
+\title{计算机组成与原理实验报告}
+\author{计科40~~黄志翱~~2014011345}
+\maketitle
+
+\section{实验要求}
+\subsection{一}
+在Y86流水线处理器中增加IADDL（iaddl 立即数，目标寄存器）与LEAVE指令。
+
+\subsection{二}
+设计实现两个共享内存的Y86流水线处理器（各带私有的L1 Cache）间的数据通信。
+
+\section{实验一}
+\subsection{题意及解法分析}
+\subsubsection{iaddl}
+iaddl的等价代码为。
+
+\subsubsection{leave}
+leave的等价代码为，基本操作与pop类似，故照抄。
+
+\section{实验二}
+\subsection{题目分析}
+显然该问题是由两个完全不同的问题拼凑而成的。
+
+\begin{itemize}
+    \item 实现具有write-allocation-write-back的两个l1 cache，并实现两者通讯以达成缓存一致性。
+    \item 基于共享内存实现Y86流水线之前的通讯。
+\end{itemize}
+
+我们只需要分别解决这两个问题即可。
+
+\subsection{l1 cache}
+首先详细地定义我们要实现的问题：在一个unix-like system下，我们需要实现两个进程。
+每个进程，需要支持从内存中读取与向内存中写入。
+
+缓存是一组键值对应的表，键指示内存中的位置，值则对应于存储在内存上的内容。
+
+由于需要维护cache，所以向内存读取的方式被限定为：查找被访问的地址是否在缓存中，若在，则读取，否则从内存将相应的内容加载到缓存，读取。
+
+由于要求write-allocation-write-back，所以向内存写入的方式被限定为：查找被访问的地址是否在缓存中，若在，则直接在缓存中写入，否则从内存将相应的内容加载到缓存，写入。另外，当缓存满时，需要将某个缓存中的元素写入内存。
+
+对于多进程的情况下，我们需要加入如下两个约束：
+
+\begin{itemize}
+    \item 对于内存中同一位置的写入不能同时进行。
+    \item 从缓存中读取时所得到的值必须是正确的。
+\end{itemize}
+
+为了优雅，我们还要求不能直接锁死内存，以及尽可能少减少向内存的写入和读取操作。为了实现这个目的，我采取了经典的MESI协议。
+
+\subsubsection{MESI}
+在MESI中，我们要求如果有某个元素存在于两个缓存上，则这两个缓存上的内容必须一致。
+
+具体而言，对于一个缓存的一个键值，存在四种状态：
+
+\begin{itemize}
+    \item M，该位置有效，键被该进程独占，值与内存中不同。
+    \item E，该位置有效，键被该进程独占，值与内存中相同。
+    \item S，两个进程都存有此值，且两个缓存，内存中的值都是一致的。
+    \item I，此位置的缓存无效。
+\end{itemize}
+
+假定两个进程之间能够通讯，现在进程A想做一点事情，那么我们可以很容易地凭借这些状态对内存进行操作：
+
+\begin{itemize}
+    \item 若当前位置是M，则A可以直接操作而当做B不存在。
+    \item 若当前位置是E，则A可以直接操作而当做B不存在。
+    \item 若当前位置是S，如果A是Read操作，可以直接读取而当B不存在，如果A要Write，则A需要通知B放弃该值，将状态改为I。
+    \item 若当前位置是I，A需要通知B，若该值在B存在，则B需要将值写入内存，A将其加载进入缓存。如果A是读取，则A，B状态都是S，如果A是写入，则A状态变为M，B状态变为I。
+\end{itemize}
+
+\subsubsection{cache通讯}
+A, B之间通讯依赖于bus的存在。基本方法是：当A想要对B进行任何信息交流时，A发出信号。A和B在闲暇时刻随时监听对方的信号，一旦B空闲下来了，就发出信号通知A表示应答。此时A即可将所要发出的信息提供给B，A继续等待B接收信息处理。这样通讯直到最后A发出结束信号，继续各干各活。
+
+如果A和B同时发出请求，则让编号大的回答标号较小的防止死锁。
+
+\subsubsection{实现细节}
+所有相关代码在misc/cache/中。
+
+server.c提供两个cache共享的内存mem和总线bus。内存通过shmat相关函数获得。内存id由ftok函数指定，id信息被存放在shareinfo.h以供所有文件访问。
+
+cache.c则实现了一个cache。首先根据shareinfo.h申请访问mem和bus。然后利用id得知自己是A还是B（从硬件角度上来讲，两个cache本身一定是有区分的，所以这个id在程序启动时就指定了），开一个共享内存$msg_{id}$，监听$msg_{id}$中是否有读写请求。当收到一个请求后，就利用MESI协议进行操作。监听msg和监听bus交替进行。无论何时收到请求则立刻回答。
+
+\subsection{对psim的修改}
+\subsubsection{同时运行两个处理器}
+假定两个cache进程已经运行，则cpu往内存进行的读写操作都通过msg发出请求进行即可。从这个角度看，只要cpu通过编号确定与哪个cache连接即可，剩下的操作与单核cpu完全一致。
+
+所以第一步修改就是将isa.c中所有涉及到内存读写的$get_word_val, get_byte_val, set_word_val, set_byte_val, load_mem$中所有对content的读写替换成通过msg向cache发出读写请求。
+
+值得注意的是，此时如果用两个模拟器同时运行程序的话，$load_mem$会将两个代码加载在同一个地方，所以我还修改了相应的函数和读取代码阶段valp的值将代码放置在不同的内存地址。
+
+\subsubsection{原子操作test}
+为了使得运行相同代码时代码能够得知自己的身份，我加入了原子操作test:
+$$test\ addr,reg$$
+效果为读取addr的值，将值赋给reg，同时将addr处的值加1。
+
+改代码格式与mrmovl基本类似，所以在修改pip-full.hcl时只要在所有有mrmovl的地方添加上该操作即可。
+
+但是为了使得这个操作在最低层面是原子的，我们需要让cache也支持这个操作——这是非常容易的，我们可以将对内存地址的test看成read和write的组合，为了保持这两个操作是连续的，只需要在A,B通讯的时候让B再等一下即可。
+
+为了在psim中使得该操作是连续的，理论上只需要将mrmovl读取内存的时候，改为test即可。但是psim.c的实现非常奇怪，操作发生在update函数中，故而我们需要记录下要写入的寄存器的值，在update时进行test并对寄存器赋值。
+
+为了视觉效果，我在test中加入了往屏幕输出test结果的功能。
+
+\subsection{y86 code}
+
+代码流程如下：根据对指定内存的test决定是A还是B，跳到指定的代码段。
+
+A会进行多次循环，每次循环是往连续的内存段中写入1，1的个数从1024到1024-100。写完之后会通过一个内存byte通知B已经写完。等待B回信，继续循环。
+
+B会等待A发出询问，当A询问完毕，会从特定内存位置开始遍历，数1的个数，直到内存中的值为0结束。代码如下：
+
+\begin{verbatim}
+.pos 0
+irmovl 0, %ecx
+test 0x00000f08(%ecx), %eax
+addl %eax, %eax
+je A
+jmp B
+
+A:
+irmovl 0, %ecx
+rmmovl %ecx, 0x00001001(%ecx)
+test 0x00001005(%ecx), %ebx
+irmovl 100, %ebx
+ALOOP:
+    irmovl 0, %ecx
+    rmmovl %ebx, 0x00000f00(%ecx)
+    AWAIT:
+        mrmovl 0x00001005(%ecx), %ebx
+        addl %ebx, %ebx
+    je AWAIT
+    test 0x00001010(%ecx), %edx
+
+    irmovl 1024, %edx
+    irmovl 0, %ecx
+    irmovl 0x00002000, %eax
+
+    INITA:
+        rmmovl %ecx, (%eax)
+        irmovl 4, %ebx
+        addl %ebx, %eax
+        irmovl 1, %ebx
+        subl %ebx, %edx
+    jne INITA
+
+    mrmovl 0x00000f00(%ecx), %ebx
+    rrmovl %ebx, %edx
+    irmovl 924, %ebx
+    addl %ebx, %edx
+    irmovl 0x00002000, %eax
+    irmovl 1, %ebx
+    irmovl 4, %ecx
+
+    ALOOP3:
+        rmmovl %ebx, (%eax)
+        addl %ecx, %eax
+        subl %ebx, %edx
+    jne ALOOP3
+
+    rmmovl %edx, 0x00001005(%edx)
+    rmmovl %edx, 0x00001015(%edx)
+    irmovl 1, %ecx
+    rmmovl %ecx, 0x00001001(%edx)
+
+    irmovl 0, %ecx
+    mrmovl 0x00000f00(%ecx), %ebx
+    irmovl 1, %ecx
+    subl %ecx, %ebx
+jne ALOOP
+irmovl 0, %ecx
+irmovl 2, %ebx
+rmmovl %ebx, 0x00001015(%ecx)
+halt
+
+B:
+BLOOP:
+    irmovl 0, %ecx
+    BWAIT:
+        mrmovl 0x00001001(%ecx), %ebx
+        addl %ebx, %ebx
+    je BWAIT
+
+    mrmovl 0x00001015(%ecx), %edx 
+    irmovl -2, %ecx
+    addl %ecx, %edx
+    je HALT
+
+    irmovl 0, %ecx
+    rmmovl %ecx, 0x00001001(%ecx)
+
+    irmovl 4, %ebx
+    irmovl 0, %edx
+    irmovl 0x00002000, %eax
+    BLOOP2:
+        addl %edx, %ecx
+        mrmovl (%eax), %edx
+        addl %ebx, %eax
+        addl %ebx, %edx
+        subl %ebx, %edx
+    jne BLOOP2
+
+    irmovl 0, %edx
+    rmmovl %ecx, 0x00001010(%edx)
+    irmovl 1, %ecx
+    rmmovl %ecx, 0x00001005(%edx)
+jmp BLOOP
+
+HALT:
+    halt
+\end{verbatim}
+
+\subsection{代码的运行}
+进入misc/cache/ make之后，再在pipe/进行make即可运行。
+
+在终端键入$python3 run_two_sim.py$即可运行。
+
+程序会依次从1024输出到926。
+\end{document}
