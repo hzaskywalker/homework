@@ -21,8 +21,8 @@ and
 misc/cache/test_two_cache.py
 sim_two_cache.py would check the output of cache if you add DEBUG into misc/cache/Makefile
 
-I add a instruction 'test' into y86.
-test would test whether the memory is 0, copy the result into a registrator, and add 1 to the value memory.
+I add an instruction 'test' into y86.
+test would test whether the memory is 0, copy the value on memory into a registrator, and let the value memory increase 1.
 To run the y86 code, just:
 
 cd pipe
