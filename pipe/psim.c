@@ -37,7 +37,7 @@ int gui_mode = FALSE;    /* Run in GUI mode instead of TTY mode? (-g) */
 char *object_filename;   /* The input object file name. */
 FILE *object_file;       /* Input file handle */
 bool_t verbosity = 0;    /* Verbosity level [TTY only] (-v) */ 
-int instr_limit = 1000000; /* Instruction limit [TTY only] (-l) */
+int instr_limit = 100000000; /* Instruction limit [TTY only] (-l) */
 bool_t do_check = FALSE; /* Test with ISA simulator? [TTY only] (-t) */
 
 int PSIM_ID = 0;
