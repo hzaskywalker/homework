@@ -1,0 +1,1005 @@
+benchmark.pl:5:# benchmark.pl - Run test of pipeline on ncopy for different block sizes 
+benchmark.pl:16:$gendriver = "./gen-driver.pl";
+benchmark.pl:30:# usage - Print the help message and terminate
+benchmark.pl:33:    print STDERR "Usage: $0 [-hq] [-n N] -f FILE\n";
+benchmark.pl:34:    print STDERR "   -h      Print help message\n";
+benchmark.pl:35:    print STDERR "   -q      Quiet mode (default verbose)\n";
+benchmark.pl:36:    print STDERR "   -n N    Set max number of elements up to 64 (default $blocklen)\n";
+benchmark.pl:37:    print STDERR "   -f FILE Input .ys file is FILE\n";
+benchmark.pl:74:    !(system "$gendriver -n $i -f $ncopy.ys > $fname$i.ys") ||
+benchmark.pl:78:    $stat = `$pipe -v 0 $fname$i.yo` ||
+benchmark.pl:108:    $score = $totalpoints * ($threshcpe - $acpe)/($threshcpe - $fullcpe);
+check-len.pl:7:$startpos = -1;
+check-len.pl:8:$endpos = -1;
+check-len.pl:12:  if ($line =~ /(0x[0-9a-fA-F]+):.* ncopy:/) {
+check-len.pl:15:  if ($line =~ /(0x[0-9a-fA-F]+):.* End:/) {
+check-len.pl:21:  $len = $endpos - $startpos;
+correctness.pl:5:# correctness.pl - Test ncopy assembly code for correctness
+correctness.pl:17:$gendriver = "./gen-driver.pl";
+correctness.pl:24:# usage - Print the help message and terminate
+correctness.pl:27:    print STDERR "Usage: $0 [-hqp] [-n N] -f FILE\n";
+correctness.pl:28:    print STDERR "   -h      Print help message\n";
+correctness.pl:29:    print STDERR "   -q      Quiet mode (default verbose)\n";
+correctness.pl:30:    print STDERR "   -p      Run program on pipeline simulator (default ISA sim)\n";
+correctness.pl:31:    print STDERR "   -n N    Set max number of elements up to 64 (default $blocklen)\n";
+correctness.pl:32:    print STDERR "   -f FILE Input .ys file is FILE\n";
+correctness.pl:33:    print STDERR "   -b blim set byte limit for function\n";
+correctness.pl:87:	$len = $blocklen * ($i - $blocklen + 1);
+correctness.pl:89:    !(system "$gendriver -rc -n $len -f $ncopy.ys -b $bytelim > $fname$len.ys") ||
+correctness.pl:94:	!(system "$pipe -v 1 $fname$len.yo > $fname$len.pipe") ||
+gen-driver.pl:5:# gen-driver - Generate driver file for any ncopy function
+gen-driver.pl:14:    print STDERR "Usage $argv[0] [-h] [-c] [-n N] [-f FILE]\n";
+gen-driver.pl:15:    print STDERR "   -h      print help message\n";
+gen-driver.pl:16:    print STDERR "   -c      include correctness checking code\n";
+gen-driver.pl:17:    print STDERR "   -n N    set number of elements\n";
+gen-driver.pl:18:    print STDERR "   -f FILE set input file (default stdin)\n";
+gen-driver.pl:19:    print STDERR "   -b blim set byte limit for function\n";
+gen-driver.pl:20:    print STDERR "   -r      Allow random result\n";
+gen-driver.pl:58:  $data[$i] = -($i+1);
+gen-driver.pl:61:      $data[$i] = -$data[$i];
+gen-driver.pl:66:	$tval - $rval >= $n - $i) {
+gen-driver.pl:67:      $data[$i] = -$data[$i];
+gen-driver.pl:177:	subl %eax,%edi    # cnt--
+ldriver.yo:18:                      | #/* $begin ncopy-ys */
+ldriver.yo:20:                      | # ncopy.ys - Copy a src block of len ints to dst.
+ldriver.yo:32:  0x02e: a06f         | 	pushl %esi		# Save callee-save regs
+ldriver.yo:53:  0x070: 6172         | 	subl %edi, %edx		# len--
+ldriver.yo:63:  0x083: b07f         | 	popl %edi               # Restore callee-save registers
+ldriver.yo:72:                      | #/* $end ncopy-ys */
+ldriver.yo:82:  0x098: fdffffff     | 	.long -3
+ldriver.yo:83:  0x09c: fcffffff     | 	.long -4
+ldriver.yo:84:  0x0a0: fbffffff     | 	.long -5
+ldriver.yo:86:  0x0a8: f9ffffff     | 	.long -7
+ldriver.yo:87:  0x0ac: f8ffffff     | 	.long -8
+ldriver.yo:92:  0x0c0: f3ffffff     | 	.long -13
+ldriver.yo:95:  0x0cc: f0ffffff     | 	.long -16
+ldriver.yo:97:  0x0d4: eeffffff     | 	.long -18
+ldriver.yo:102:  0x0e8: e9ffffff     | 	.long -23
+ldriver.yo:103:  0x0ec: e8ffffff     | 	.long -24
+ldriver.yo:104:  0x0f0: e7ffffff     | 	.long -25
+ldriver.yo:105:  0x0f4: e6ffffff     | 	.long -26
+ldriver.yo:106:  0x0f8: e5ffffff     | 	.long -27
+ldriver.yo:107:  0x0fc: e4ffffff     | 	.long -28
+ldriver.yo:109:  0x104: e2ffffff     | 	.long -30
+ldriver.yo:112:  0x110: dfffffff     | 	.long -33
+ldriver.yo:116:  0x120: dbffffff     | 	.long -37
+ldriver.yo:118:  0x128: d9ffffff     | 	.long -39
+ldriver.yo:119:  0x12c: d8ffffff     | 	.long -40
+ldriver.yo:121:  0x134: d6ffffff     | 	.long -42
+ldriver.yo:122:  0x138: d5ffffff     | 	.long -43
+ldriver.yo:123:  0x13c: d4ffffff     | 	.long -44
+ldriver.yo:124:  0x140: d3ffffff     | 	.long -45
+ldriver.yo:125:  0x144: d2ffffff     | 	.long -46
+ldriver.yo:126:  0x148: d1ffffff     | 	.long -47
+ldriver.yo:128:  0x150: cfffffff     | 	.long -49
+ldriver.yo:129:  0x154: ceffffff     | 	.long -50
+ldriver.yo:132:  0x160: cbffffff     | 	.long -53
+ldriver.yo:137:  0x174: c6ffffff     | 	.long -58
+ldriver.yo:140:  0x180: c3ffffff     | 	.long -61
+ldriver.yo:141:  0x184: c2ffffff     | 	.long -62
+ldriver.yo:142:  0x188: c1ffffff     | 	.long -63
+ldriver.ys:18:#/* $begin ncopy-ys */
+ldriver.ys:20:# ncopy.ys - Copy a src block of len ints to dst.
+ldriver.ys:32:	pushl %esi		# Save callee-save regs
+ldriver.ys:53:	subl %edi, %edx		# len--
+ldriver.ys:63:	popl %edi               # Restore callee-save registers
+ldriver.ys:72:#/* $end ncopy-ys */
+ldriver.ys:82:	.long -3
+ldriver.ys:83:	.long -4
+ldriver.ys:84:	.long -5
+ldriver.ys:86:	.long -7
+ldriver.ys:87:	.long -8
+ldriver.ys:92:	.long -13
+ldriver.ys:95:	.long -16
+ldriver.ys:97:	.long -18
+ldriver.ys:102:	.long -23
+ldriver.ys:103:	.long -24
+ldriver.ys:104:	.long -25
+ldriver.ys:105:	.long -26
+ldriver.ys:106:	.long -27
+ldriver.ys:107:	.long -28
+ldriver.ys:109:	.long -30
+ldriver.ys:112:	.long -33
+ldriver.ys:116:	.long -37
+ldriver.ys:118:	.long -39
+ldriver.ys:119:	.long -40
+ldriver.ys:121:	.long -42
+ldriver.ys:122:	.long -43
+ldriver.ys:123:	.long -44
+ldriver.ys:124:	.long -45
+ldriver.ys:125:	.long -46
+ldriver.ys:126:	.long -47
+ldriver.ys:128:	.long -49
+ldriver.ys:129:	.long -50
+ldriver.ys:132:	.long -53
+ldriver.ys:137:	.long -58
+ldriver.ys:140:	.long -61
+ldriver.ys:141:	.long -62
+ldriver.ys:142:	.long -63
+Makefile:7:#GUIMODE=-DHAS_GUI
+Makefile:10:# libtk.so libraries on your system. You may need to use the -L option
+Makefile:14:#TKLIBS=-L/usr/lib -ltk -ltcl
+Makefile:20:#TKINC=-isystem /usr/include
+Makefile:26:CFLAGS=-Wall -O2
+Makefile:34:INC=$(TKINC) -I$(MISCDIR) $(GUIMODE)
+Makefile:35:LIBS=$(TKLIBS) -lm
+Makefile:41:psim: psim.c sim.h pipe-$(VERSION).hcl $(MISCDIR)/isa.c $(MISCDIR)/isa.h $(MISCDIR)/cache/cache.h
+Makefile:42:	# Building the pipe-$(VERSION).hcl version of PIPE
+Makefile:43:	$(HCL2C) -n pipe-$(VERSION).hcl < pipe-$(VERSION).hcl > pipe-$(VERSION).c
+Makefile:44:	$(CC) $(CFLAGS) $(INC) -o psim psim.c pipe-$(VERSION).c \
+Makefile:49:	./gen-driver.pl -n 4 -f ncopy.ys > sdriver.ys
+Makefile:51:	./gen-driver.pl -n 63 -f ncopy.ys > ldriver.ys
+Makefile:61:	rm -f psim pipe-*.c *.o *.exe *~ 
+ncopy.c:7: * ncopy - copy src to dst, returning number of positive ints
+ncopy.c:20:	len--;
+ncopy.ys:1:#/* $begin ncopy-ys */
+ncopy.ys:3:# ncopy.ys - Copy a src block of len ints to dst.
+ncopy.ys:15:	pushl %esi		# Save callee-save regs
+ncopy.ys:36:	subl %edi, %edx		# len--
+ncopy.ys:46:	popl %edi               # Restore callee-save registers
+ncopy.ys:55:#/* $end ncopy-ys */
+pipe-broken.hcl:1:#/* $begin pipe-all-hcl */
+pipe-broken.hcl:59:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-broken.hcl:65:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-broken.hcl:66:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-broken.hcl:67:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-broken.hcl:68:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-broken.hcl:73:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-broken.hcl:74:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-broken.hcl:75:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-broken.hcl:76:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-broken.hcl:80:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-broken.hcl:81:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-broken.hcl:86:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-broken.hcl:87:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-broken.hcl:88:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-broken.hcl:89:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-broken.hcl:90:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-broken.hcl:91:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-broken.hcl:92:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-broken.hcl:93:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-broken.hcl:94:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-broken.hcl:97:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-broken.hcl:98:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-broken.hcl:99:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-broken.hcl:102:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-broken.hcl:103:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-broken.hcl:104:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-broken.hcl:105:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-broken.hcl:106:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-broken.hcl:107:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-broken.hcl:108:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-broken.hcl:109:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-broken.hcl:113:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-broken.hcl:114:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-broken.hcl:117:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-broken.hcl:118:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-broken.hcl:119:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-broken.hcl:120:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-broken.hcl:121:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-broken.hcl:122:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-broken.hcl:226:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-broken.hcl:253:## Set dstE to RNONE in event of not-taken conditional move
+pipe-broken.hcl:274:#/* $begin pipe-m_stat-hcl */
+pipe-broken.hcl:280:#/* $end pipe-m_stat-hcl */
+pipe-broken.hcl:331:#/* $end pipe-all-hcl */
+pipe-1w.hcl:1:#/* $begin pipe-all-hcl */
+pipe-1w.hcl:71:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-1w.hcl:77:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-1w.hcl:78:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-1w.hcl:79:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-1w.hcl:80:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-1w.hcl:87:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-1w.hcl:88:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-1w.hcl:89:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-1w.hcl:90:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-1w.hcl:94:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-1w.hcl:95:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-1w.hcl:100:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-1w.hcl:101:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-1w.hcl:102:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-1w.hcl:103:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-1w.hcl:104:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-1w.hcl:105:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-1w.hcl:106:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-1w.hcl:107:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-1w.hcl:108:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-1w.hcl:111:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-1w.hcl:112:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-1w.hcl:113:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-1w.hcl:116:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-1w.hcl:117:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-1w.hcl:118:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-1w.hcl:119:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-1w.hcl:120:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-1w.hcl:121:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-1w.hcl:122:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-1w.hcl:123:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-1w.hcl:127:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-1w.hcl:128:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-1w.hcl:131:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-1w.hcl:132:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-1w.hcl:133:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-1w.hcl:134:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-1w.hcl:135:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-1w.hcl:136:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-1w.hcl:202:## Decoding of pop2 rA treated same as mrmovl -4(%esp), rA
+pipe-1w.hcl:258:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-1w.hcl:285:## Set dstE to RNONE in event of not-taken conditional move
+pipe-1w.hcl:306:#/* $begin pipe-m_stat-hcl */
+pipe-1w.hcl:312:#/* $end pipe-m_stat-hcl */
+pipe-1w.hcl:393:#/* $end pipe-all-hcl */
+pipe-btfnt.hcl:1:#/* $begin pipe-all-hcl */
+pipe-btfnt.hcl:8:## predicted as being taken when backward and not-taken when forward
+pipe-btfnt.hcl:68:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-btfnt.hcl:74:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-btfnt.hcl:75:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-btfnt.hcl:76:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-btfnt.hcl:77:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-btfnt.hcl:82:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-btfnt.hcl:83:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-btfnt.hcl:84:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-btfnt.hcl:85:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-btfnt.hcl:89:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-btfnt.hcl:90:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-btfnt.hcl:95:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-btfnt.hcl:96:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-btfnt.hcl:97:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-btfnt.hcl:98:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-btfnt.hcl:99:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-btfnt.hcl:100:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-btfnt.hcl:101:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-btfnt.hcl:102:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-btfnt.hcl:103:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-btfnt.hcl:106:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-btfnt.hcl:107:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-btfnt.hcl:108:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-btfnt.hcl:111:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-btfnt.hcl:112:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-btfnt.hcl:113:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-btfnt.hcl:114:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-btfnt.hcl:115:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-btfnt.hcl:116:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-btfnt.hcl:117:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-btfnt.hcl:118:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-btfnt.hcl:122:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-btfnt.hcl:123:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-btfnt.hcl:126:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-btfnt.hcl:127:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-btfnt.hcl:128:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-btfnt.hcl:129:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-btfnt.hcl:130:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-btfnt.hcl:131:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-btfnt.hcl:243:# BBTFNT: When some branches are predicted as not-taken, you need some
+pipe-btfnt.hcl:251:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-btfnt.hcl:278:## Set dstE to RNONE in event of not-taken conditional move
+pipe-btfnt.hcl:299:#/* $begin pipe-m_stat-hcl */
+pipe-btfnt.hcl:305:#/* $end pipe-m_stat-hcl */
+pipe-btfnt.hcl:373:#/* $end pipe-all-hcl */
+pipe-full.c:1:char simname[] = "Y86 Processor: pipe-full.hcl";
+pipe-full.c:11:    return ((((ex_mem_curr->icode) == (I_JMP)) & !(ex_mem_curr->takebranch)
+pipe-full.c:12:        ) ? (ex_mem_curr->vala) : ((mem_wb_curr->icode) == (I_RET)) ? 
+pipe-full.c:13:      (mem_wb_curr->valm) : (pc_curr->pc));
+pipe-full.c:28:    return ((if_id_next->icode) == (I_NOP) || (if_id_next->icode) == 
+pipe-full.c:29:      (I_HALT) || (if_id_next->icode) == (I_RRMOVL) || (if_id_next->icode)
+pipe-full.c:30:       == (I_IRMOVL) || (if_id_next->icode) == (I_RMMOVL) || 
+pipe-full.c:31:      (if_id_next->icode) == (I_MRMOVL) || (if_id_next->icode) == (I_ALU)
+pipe-full.c:32:       || (if_id_next->icode) == (I_JMP) || (if_id_next->icode) == (I_CALL)
+pipe-full.c:33:       || (if_id_next->icode) == (I_RET) || (if_id_next->icode) == 
+pipe-full.c:34:      (I_PUSHL) || (if_id_next->icode) == (I_POPL) || (if_id_next->icode)
+pipe-full.c:35:       == (I_IADDL) || (if_id_next->icode) == (I_LEAVE) || 
+pipe-full.c:36:      (if_id_next->icode) == (I_TEST));
+pipe-full.c:42:        (if_id_next->icode) == (I_HALT)) ? (STAT_HLT) : (STAT_AOK));
+pipe-full.c:47:    return ((if_id_next->icode) == (I_RRMOVL) || (if_id_next->icode) == 
+pipe-full.c:48:      (I_ALU) || (if_id_next->icode) == (I_PUSHL) || (if_id_next->icode)
+pipe-full.c:49:       == (I_POPL) || (if_id_next->icode) == (I_IRMOVL) || 
+pipe-full.c:50:      (if_id_next->icode) == (I_RMMOVL) || (if_id_next->icode) == 
+pipe-full.c:51:      (I_MRMOVL) || (if_id_next->icode) == (I_IADDL) || (if_id_next->icode)
+pipe-full.c:57:    return ((if_id_next->icode) == (I_IRMOVL) || (if_id_next->icode) == 
+pipe-full.c:58:      (I_RMMOVL) || (if_id_next->icode) == (I_MRMOVL) || 
+pipe-full.c:59:      (if_id_next->icode) == (I_JMP) || (if_id_next->icode) == (I_CALL) || 
+pipe-full.c:60:      (if_id_next->icode) == (I_IADDL));
+pipe-full.c:65:    return (((if_id_next->icode) == (I_JMP) || (if_id_next->icode) == 
+pipe-full.c:66:        (I_CALL)) ? (if_id_next->valc) : (if_id_next->valp));
+pipe-full.c:71:    return (((if_id_curr->icode) == (I_RRMOVL) || (if_id_curr->icode) == 
+pipe-full.c:72:        (I_RMMOVL) || (if_id_curr->icode) == (I_ALU) || (if_id_curr->icode)
+pipe-full.c:73:         == (I_PUSHL)) ? (if_id_curr->ra) : ((if_id_curr->icode) == 
+pipe-full.c:74:        (I_POPL) || (if_id_curr->icode) == (I_RET)) ? (REG_ESP) : (
+pipe-full.c:75:        (if_id_curr->icode) == (I_LEAVE)) ? (REG_EBP) : (REG_NONE));
+pipe-full.c:80:    return (((if_id_curr->icode) == (I_ALU) || (if_id_curr->icode) == 
+pipe-full.c:81:        (I_RMMOVL) || (if_id_curr->icode) == (I_MRMOVL) || 
+pipe-full.c:82:        (if_id_curr->icode) == (I_IADDL) || (if_id_curr->icode) == (I_TEST)
+pipe-full.c:83:        ) ? (if_id_curr->rb) : ((if_id_curr->icode) == (I_PUSHL) || 
+pipe-full.c:84:        (if_id_curr->icode) == (I_POPL) || (if_id_curr->icode) == (I_CALL)
+pipe-full.c:85:         || (if_id_curr->icode) == (I_RET) || (if_id_curr->icode) == 
+pipe-full.c:91:    return (((if_id_curr->icode) == (I_RRMOVL) || (if_id_curr->icode) == 
+pipe-full.c:92:        (I_IRMOVL) || (if_id_curr->icode) == (I_ALU) || (if_id_curr->icode)
+pipe-full.c:93:         == (I_IADDL)) ? (if_id_curr->rb) : ((if_id_curr->icode) == 
+pipe-full.c:94:        (I_PUSHL) || (if_id_curr->icode) == (I_POPL) || (if_id_curr->icode)
+pipe-full.c:95:         == (I_CALL) || (if_id_curr->icode) == (I_RET) || 
+pipe-full.c:96:        (if_id_curr->icode) == (I_LEAVE)) ? (REG_ESP) : (REG_NONE));
+pipe-full.c:101:    return (((if_id_curr->icode) == (I_MRMOVL) || (if_id_curr->icode) == 
+pipe-full.c:102:        (I_POPL) || (if_id_curr->icode) == (I_TEST)) ? (if_id_curr->ra) : (
+pipe-full.c:103:        (if_id_curr->icode) == (I_LEAVE)) ? (REG_EBP) : (REG_NONE));
+pipe-full.c:108:    return (((if_id_curr->icode) == (I_CALL) || (if_id_curr->icode) == 
+pipe-full.c:109:        (I_JMP)) ? (if_id_curr->valp) : ((id_ex_next->srca) == 
+pipe-full.c:110:        (ex_mem_next->deste)) ? (ex_mem_next->vale) : ((id_ex_next->srca)
+pipe-full.c:111:         == (ex_mem_curr->destm)) ? (mem_wb_next->valm) : (
+pipe-full.c:112:        (id_ex_next->srca) == (ex_mem_curr->deste)) ? (ex_mem_curr->vale)
+pipe-full.c:113:       : ((id_ex_next->srca) == (mem_wb_curr->destm)) ? (mem_wb_curr->valm)
+pipe-full.c:114:       : ((id_ex_next->srca) == (mem_wb_curr->deste)) ? (mem_wb_curr->vale)
+pipe-full.c:120:    return (((id_ex_next->srcb) == (ex_mem_next->deste)) ? 
+pipe-full.c:121:      (ex_mem_next->vale) : ((id_ex_next->srcb) == (ex_mem_curr->destm)) ? 
+pipe-full.c:122:      (mem_wb_next->valm) : ((id_ex_next->srcb) == (ex_mem_curr->deste)) ? 
+pipe-full.c:123:      (ex_mem_curr->vale) : ((id_ex_next->srcb) == (mem_wb_curr->destm)) ? 
+pipe-full.c:124:      (mem_wb_curr->valm) : ((id_ex_next->srcb) == (mem_wb_curr->deste)) ? 
+pipe-full.c:125:      (mem_wb_curr->vale) : (d_regvalb));
+pipe-full.c:130:    return (((id_ex_curr->icode) == (I_RRMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:131:        (I_ALU)) ? (id_ex_curr->vala) : ((id_ex_curr->icode) == (I_IRMOVL)
+pipe-full.c:132:         || (id_ex_curr->icode) == (I_RMMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:133:        (I_MRMOVL) || (id_ex_curr->icode) == (I_IADDL) || 
+pipe-full.c:134:        (id_ex_curr->icode) == (I_TEST)) ? (id_ex_curr->valc) : (
+pipe-full.c:135:        (id_ex_curr->icode) == (I_CALL) || (id_ex_curr->icode) == (I_PUSHL)
+pipe-full.c:136:        ) ? -4 : ((id_ex_curr->icode) == (I_RET) || (id_ex_curr->icode) == 
+pipe-full.c:137:        (I_POPL)) ? 4 : ((id_ex_curr->icode) == (I_LEAVE)) ? 
+pipe-full.c:138:      (id_ex_curr->vala) : 0);
+pipe-full.c:143:    return (((id_ex_curr->icode) == (I_RMMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:144:        (I_MRMOVL) || (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode)
+pipe-full.c:145:         == (I_CALL) || (id_ex_curr->icode) == (I_PUSHL) || 
+pipe-full.c:146:        (id_ex_curr->icode) == (I_RET) || (id_ex_curr->icode) == (I_POPL)
+pipe-full.c:147:         || (id_ex_curr->icode) == (I_IADDL) || (id_ex_curr->icode) == 
+pipe-full.c:148:        (I_TEST)) ? (id_ex_curr->valb) : ((id_ex_curr->icode) == (I_RRMOVL)
+pipe-full.c:149:         || (id_ex_curr->icode) == (I_IRMOVL)) ? 0 : ((id_ex_curr->icode)
+pipe-full.c:155:    return (((id_ex_curr->icode) == (I_ALU)) ? (id_ex_curr->ifun) : (A_ADD)
+pipe-full.c:161:    return ((((((id_ex_curr->icode) == (I_ALU)) | ((id_ex_curr->icode) == 
+pipe-full.c:162:              (I_IADDL))) | ((id_ex_curr->icode) == (I_TEST))) & !(
+pipe-full.c:163:          (mem_wb_next->status) == (STAT_ADR) || (mem_wb_next->status) == 
+pipe-full.c:164:          (STAT_INS) || (mem_wb_next->status) == (STAT_HLT))) & !(
+pipe-full.c:165:        (mem_wb_curr->status) == (STAT_ADR) || (mem_wb_curr->status) == 
+pipe-full.c:166:        (STAT_INS) || (mem_wb_curr->status) == (STAT_HLT)));
+pipe-full.c:171:    return (id_ex_curr->vala);
+pipe-full.c:176:    return ((((id_ex_curr->icode) == (I_RRMOVL)) & !
+pipe-full.c:177:        (ex_mem_next->takebranch)) ? (REG_NONE) : (id_ex_curr->deste));
+pipe-full.c:182:    return (((ex_mem_curr->icode) == (I_RMMOVL) || (ex_mem_curr->icode) == 
+pipe-full.c:183:        (I_PUSHL) || (ex_mem_curr->icode) == (I_CALL) || 
+pipe-full.c:184:        (ex_mem_curr->icode) == (I_MRMOVL) || (ex_mem_curr->icode) == 
+pipe-full.c:185:        (I_TEST)) ? (ex_mem_curr->vale) : ((ex_mem_curr->icode) == (I_POPL)
+pipe-full.c:186:         || (ex_mem_curr->icode) == (I_RET) || (ex_mem_curr->icode) == 
+pipe-full.c:187:        (I_LEAVE)) ? (ex_mem_curr->vala) : 0);
+pipe-full.c:192:    return ((ex_mem_curr->icode) == (I_MRMOVL) || (ex_mem_curr->icode) == 
+pipe-full.c:193:      (I_POPL) || (ex_mem_curr->icode) == (I_RET) || (ex_mem_curr->icode)
+pipe-full.c:199:    return ((ex_mem_curr->icode) == (I_RMMOVL) || (ex_mem_curr->icode) == 
+pipe-full.c:200:      (I_PUSHL) || (ex_mem_curr->icode) == (I_CALL) || (ex_mem_curr->icode)
+pipe-full.c:206:    return ((ex_mem_curr->icode) == (I_TEST));
+pipe-full.c:211:    return ((dmem_error) ? (STAT_ADR) : (ex_mem_curr->status));
+pipe-full.c:216:    return (mem_wb_curr->deste);
+pipe-full.c:221:    return (mem_wb_curr->vale);
+pipe-full.c:226:    return (mem_wb_curr->destm);
+pipe-full.c:231:    return (mem_wb_curr->valm);
+pipe-full.c:236:    return (((mem_wb_curr->status) == (STAT_BUB)) ? (STAT_AOK) : 
+pipe-full.c:237:      (mem_wb_curr->status));
+pipe-full.c:247:    return ((((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:248:          (I_POPL) || (id_ex_curr->icode) == (I_LEAVE)) & (
+pipe-full.c:249:          (id_ex_curr->destm) == (id_ex_next->srca) || (id_ex_curr->destm)
+pipe-full.c:250:           == (id_ex_next->srcb))) | ((I_RET) == (if_id_curr->icode) || 
+pipe-full.c:251:        (I_RET) == (id_ex_curr->icode) || (I_RET) == (ex_mem_curr->icode)))
+pipe-full.c:257:    return (((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:258:        (I_POPL) || (id_ex_curr->icode) == (I_LEAVE)) & (
+pipe-full.c:259:        (id_ex_curr->destm) == (id_ex_next->srca) || (id_ex_curr->destm)
+pipe-full.c:260:         == (id_ex_next->srcb)));
+pipe-full.c:265:    return ((((id_ex_curr->icode) == (I_JMP)) & !(ex_mem_next->takebranch))
+pipe-full.c:266:       | (!(((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:267:            (I_POPL) || (id_ex_curr->icode) == (I_LEAVE)) & (
+pipe-full.c:268:            (id_ex_curr->destm) == (id_ex_next->srca) || 
+pipe-full.c:269:            (id_ex_curr->destm) == (id_ex_next->srcb))) & ((I_RET) == 
+pipe-full.c:270:          (if_id_curr->icode) || (I_RET) == (id_ex_curr->icode) || (I_RET)
+pipe-full.c:271:           == (ex_mem_curr->icode))));
+pipe-full.c:281:    return ((((id_ex_curr->icode) == (I_JMP)) & !(ex_mem_next->takebranch))
+pipe-full.c:282:       | (((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
+pipe-full.c:283:          (I_POPL) || (id_ex_curr->icode) == (I_LEAVE)) & (
+pipe-full.c:284:          (id_ex_curr->destm) == (id_ex_next->srca) || (id_ex_curr->destm)
+pipe-full.c:285:           == (id_ex_next->srcb))));
+pipe-full.c:295:    return (((mem_wb_next->status) == (STAT_ADR) || (mem_wb_next->status)
+pipe-full.c:296:         == (STAT_INS) || (mem_wb_next->status) == (STAT_HLT)) | (
+pipe-full.c:297:        (mem_wb_curr->status) == (STAT_ADR) || (mem_wb_curr->status) == 
+pipe-full.c:298:        (STAT_INS) || (mem_wb_curr->status) == (STAT_HLT)));
+pipe-full.c:303:    return ((mem_wb_curr->status) == (STAT_ADR) || (mem_wb_curr->status)
+pipe-full.c:304:       == (STAT_INS) || (mem_wb_curr->status) == (STAT_HLT));
+pipe-full.hcl:1:#/* $begin pipe-all-hcl */
+pipe-full.hcl:70:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-full.hcl:76:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-full.hcl:77:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-full.hcl:78:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-full.hcl:79:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-full.hcl:84:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-full.hcl:85:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-full.hcl:86:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-full.hcl:87:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-full.hcl:91:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-full.hcl:92:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-full.hcl:97:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-full.hcl:98:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-full.hcl:99:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-full.hcl:100:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-full.hcl:101:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-full.hcl:102:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-full.hcl:103:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-full.hcl:104:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-full.hcl:105:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-full.hcl:108:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-full.hcl:109:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-full.hcl:110:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-full.hcl:113:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-full.hcl:114:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-full.hcl:115:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-full.hcl:116:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-full.hcl:117:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-full.hcl:118:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-full.hcl:119:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-full.hcl:120:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-full.hcl:124:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-full.hcl:125:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-full.hcl:128:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-full.hcl:129:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-full.hcl:130:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-full.hcl:131:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-full.hcl:132:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-full.hcl:133:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-full.hcl:250:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-full.hcl:279:## Set dstE to RNONE in event of not-taken conditional move
+pipe-full.hcl:302:#/* $begin pipe-m_stat-hcl */
+pipe-full.hcl:308:#/* $end pipe-m_stat-hcl */
+pipe-full.hcl:374:#/* $end pipe-all-hcl */
+pipe-lf.hcl:1:#/* $begin pipe-all-hcl */
+pipe-lf.hcl:7:## Your task is to implement load-forwarding, where a value
+pipe-lf.hcl:65:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-lf.hcl:71:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-lf.hcl:72:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-lf.hcl:73:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-lf.hcl:74:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-lf.hcl:79:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-lf.hcl:80:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-lf.hcl:81:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-lf.hcl:82:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-lf.hcl:86:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-lf.hcl:87:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-lf.hcl:92:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-lf.hcl:93:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-lf.hcl:94:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-lf.hcl:95:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-lf.hcl:96:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-lf.hcl:97:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-lf.hcl:98:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-lf.hcl:99:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-lf.hcl:100:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-lf.hcl:103:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-lf.hcl:104:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-lf.hcl:105:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-lf.hcl:108:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-lf.hcl:109:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-lf.hcl:110:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-lf.hcl:111:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-lf.hcl:112:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-lf.hcl:113:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-lf.hcl:114:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-lf.hcl:115:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-lf.hcl:118:intsig M_srcA 'ex_mem_curr->srca'	# Source A register ID
+pipe-lf.hcl:121:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-lf.hcl:122:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-lf.hcl:125:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-lf.hcl:126:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-lf.hcl:127:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-lf.hcl:128:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-lf.hcl:129:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-lf.hcl:130:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-lf.hcl:245:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-lf.hcl:277:## Set dstE to RNONE in event of not-taken conditional move
+pipe-lf.hcl:298:#/* $begin pipe-m_stat-hcl */
+pipe-lf.hcl:304:#/* $end pipe-m_stat-hcl */
+pipe-lf.hcl:370:#/* $end pipe-all-hcl */
+pipe-nobypass.hcl:1:#/* $begin pipe-all-hcl */
+pipe-nobypass.hcl:63:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-nobypass.hcl:69:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-nobypass.hcl:70:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-nobypass.hcl:71:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-nobypass.hcl:72:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-nobypass.hcl:77:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-nobypass.hcl:78:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-nobypass.hcl:79:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-nobypass.hcl:80:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-nobypass.hcl:84:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-nobypass.hcl:85:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-nobypass.hcl:90:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-nobypass.hcl:91:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-nobypass.hcl:92:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-nobypass.hcl:93:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-nobypass.hcl:94:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-nobypass.hcl:95:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-nobypass.hcl:96:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-nobypass.hcl:97:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-nobypass.hcl:98:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-nobypass.hcl:101:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-nobypass.hcl:102:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-nobypass.hcl:103:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-nobypass.hcl:106:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-nobypass.hcl:107:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-nobypass.hcl:108:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-nobypass.hcl:109:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-nobypass.hcl:110:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-nobypass.hcl:111:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-nobypass.hcl:112:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-nobypass.hcl:113:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-nobypass.hcl:117:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-nobypass.hcl:118:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-nobypass.hcl:121:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-nobypass.hcl:122:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-nobypass.hcl:123:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-nobypass.hcl:124:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-nobypass.hcl:125:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-nobypass.hcl:126:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-nobypass.hcl:231:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-nobypass.hcl:258:## Set dstE to RNONE in event of not-taken conditional move
+pipe-nobypass.hcl:279:#/* $begin pipe-m_stat-hcl */
+pipe-nobypass.hcl:285:#/* $end pipe-m_stat-hcl */
+pipe-nobypass.hcl:349:#/* $end pipe-all-hcl */
+pipe-nt.hcl:1:#/* $begin pipe-all-hcl */
+pipe-nt.hcl:8:## predicted as being not-taken.  The code here is nearly identical
+pipe-nt.hcl:68:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-nt.hcl:74:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-nt.hcl:75:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-nt.hcl:76:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-nt.hcl:77:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-nt.hcl:82:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-nt.hcl:83:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-nt.hcl:84:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-nt.hcl:85:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-nt.hcl:89:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-nt.hcl:90:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-nt.hcl:95:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-nt.hcl:96:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-nt.hcl:97:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-nt.hcl:98:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-nt.hcl:99:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-nt.hcl:100:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-nt.hcl:101:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-nt.hcl:102:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-nt.hcl:103:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-nt.hcl:106:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-nt.hcl:107:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-nt.hcl:108:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-nt.hcl:111:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-nt.hcl:112:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-nt.hcl:113:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-nt.hcl:114:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-nt.hcl:115:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-nt.hcl:116:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-nt.hcl:117:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-nt.hcl:118:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-nt.hcl:122:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-nt.hcl:123:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-nt.hcl:126:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-nt.hcl:127:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-nt.hcl:128:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-nt.hcl:129:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-nt.hcl:130:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-nt.hcl:131:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-nt.hcl:243:# BNT: When some branches are predicted as not-taken, you need some
+pipe-nt.hcl:251:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-nt.hcl:278:## Set dstE to RNONE in event of not-taken conditional move
+pipe-nt.hcl:299:#/* $begin pipe-m_stat-hcl */
+pipe-nt.hcl:305:#/* $end pipe-m_stat-hcl */
+pipe-nt.hcl:371:#/* $end pipe-all-hcl */
+pipe-std.hcl:1:#/* $begin pipe-all-hcl */
+pipe-std.hcl:58:intsig F_predPC 'pc_curr->pc'	     # Predicted value of PC
+pipe-std.hcl:64:intsig f_icode	'if_id_next->icode'  # (Possibly modified) instruction code
+pipe-std.hcl:65:intsig f_ifun	'if_id_next->ifun'   # Fetched instruction function
+pipe-std.hcl:66:intsig f_valC	'if_id_next->valc'   # Constant data of fetched instruction
+pipe-std.hcl:67:intsig f_valP	'if_id_next->valp'   # Address of following instruction
+pipe-std.hcl:72:intsig D_icode 'if_id_curr->icode'   # Instruction code
+pipe-std.hcl:73:intsig D_rA 'if_id_curr->ra'	     # rA field from instruction
+pipe-std.hcl:74:intsig D_rB 'if_id_curr->rb'	     # rB field from instruction
+pipe-std.hcl:75:intsig D_valP 'if_id_curr->valp'     # Incremented PC
+pipe-std.hcl:79:intsig d_srcA	 'id_ex_next->srca'  # srcA from decoded instruction
+pipe-std.hcl:80:intsig d_srcB	 'id_ex_next->srcb'  # srcB from decoded instruction
+pipe-std.hcl:85:intsig E_icode 'id_ex_curr->icode'   # Instruction code
+pipe-std.hcl:86:intsig E_ifun  'id_ex_curr->ifun'    # Instruction function
+pipe-std.hcl:87:intsig E_valC  'id_ex_curr->valc'    # Constant data
+pipe-std.hcl:88:intsig E_srcA  'id_ex_curr->srca'    # Source A register ID
+pipe-std.hcl:89:intsig E_valA  'id_ex_curr->vala'    # Source A value
+pipe-std.hcl:90:intsig E_srcB  'id_ex_curr->srcb'    # Source B register ID
+pipe-std.hcl:91:intsig E_valB  'id_ex_curr->valb'    # Source B value
+pipe-std.hcl:92:intsig E_dstE 'id_ex_curr->deste'    # Destination E register ID
+pipe-std.hcl:93:intsig E_dstM 'id_ex_curr->destm'    # Destination M register ID
+pipe-std.hcl:96:intsig e_valE 'ex_mem_next->vale'	# valE generated by ALU
+pipe-std.hcl:97:boolsig e_Cnd 'ex_mem_next->takebranch' # Does condition hold?
+pipe-std.hcl:98:intsig e_dstE 'ex_mem_next->deste'      # dstE (possibly modified to be RNONE)
+pipe-std.hcl:101:intsig M_stat 'ex_mem_curr->status'     # Instruction status
+pipe-std.hcl:102:intsig M_icode 'ex_mem_curr->icode'	# Instruction code
+pipe-std.hcl:103:intsig M_ifun  'ex_mem_curr->ifun'	# Instruction function
+pipe-std.hcl:104:intsig M_valA  'ex_mem_curr->vala'      # Source A value
+pipe-std.hcl:105:intsig M_dstE 'ex_mem_curr->deste'	# Destination E register ID
+pipe-std.hcl:106:intsig M_valE  'ex_mem_curr->vale'      # ALU E value
+pipe-std.hcl:107:intsig M_dstM 'ex_mem_curr->destm'	# Destination M register ID
+pipe-std.hcl:108:boolsig M_Cnd 'ex_mem_curr->takebranch'	# Condition flag
+pipe-std.hcl:112:intsig m_valM 'mem_wb_next->valm'	# valM generated by memory
+pipe-std.hcl:113:intsig m_stat 'mem_wb_next->status'	# stat (possibly modified to be SADR)
+pipe-std.hcl:116:intsig W_stat 'mem_wb_curr->status'     # Instruction status
+pipe-std.hcl:117:intsig W_icode 'mem_wb_curr->icode'	# Instruction code
+pipe-std.hcl:118:intsig W_dstE 'mem_wb_curr->deste'	# Destination E register ID
+pipe-std.hcl:119:intsig W_valE  'mem_wb_curr->vale'      # ALU E value
+pipe-std.hcl:120:intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
+pipe-std.hcl:121:intsig W_valM  'mem_wb_curr->valm'	# Memory M value
+pipe-std.hcl:236:	E_icode in { ICALL, IPUSHL } : -4;
+pipe-std.hcl:263:## Set dstE to RNONE in event of not-taken conditional move
+pipe-std.hcl:284:#/* $begin pipe-m_stat-hcl */
+pipe-std.hcl:290:#/* $end pipe-m_stat-hcl */
+pipe-std.hcl:356:#/* $end pipe-all-hcl */
+pipe.tcl:8:	if {[string match "-$flag*" $t]} {return [string range $t 2 end]}
+pipe.tcl:16:	if {[string match "-$flag" $t]} {return 1}
+pipe.tcl:31:set dpyFont "*-courier-medium-r-normal--*-$fontSize-*-*-*-*-*-*"
+pipe.tcl:32:set labFont "*-helvetica-medium-r-normal--*-$labFontSize-*-*-*-*-*-*"
+pipe.tcl:33:set bigLabFont "*-helvetica-bold-r-normal--*-$bigFontSize-*-*-*-*-*-*"
+pipe.tcl:34:set codeFont "*-courier-medium-r-normal--*-$codeFontSize-*-*-*-*-*-*"
+pipe.tcl:48:set lastId -1
+pipe.tcl:52:	.r.reg$lastId config -bg $normalBg
+pipe.tcl:53:	set lastId -1
+pipe.tcl:58:    .r.reg$id config -text [format %8x $val]
+pipe.tcl:60:	uplevel .r.reg$id config -bg $specialBg
+pipe.tcl:69:	.r.reg$lastId config -bg $normalBg
+pipe.tcl:70:	set lastId -1
+pipe.tcl:73:	.r.reg$i config -text ""
+pipe.tcl:79:    .cc.cc0 config -text [format %d $zv]
+pipe.tcl:80:    .cc.cc1 config -text [format %d $cv]
+pipe.tcl:81:    .cc.cc2 config -text [format %d $ov]
+pipe.tcl:86:    .cpi.cyc config -text [format %d $cycles]
+pipe.tcl:87:    .cpi.instr config -text [format %d $instructions]
+pipe.tcl:88:    .cpi.cpi config -text [format %.2f $cpi]
+pipe.tcl:93:    .stat.val config -text $s
+pipe.tcl:101:pack .cpi -in . -side bottom
+pipe.tcl:103:label .cpi.lab -text "Performance" -font $bigLabFont -height $sectionHeight
+pipe.tcl:104:pack .cpi.lab -in .cpi -side left
+pipe.tcl:106:label .cpi.clab -text "Cycles" -font $labFont
+pipe.tcl:107:pack .cpi.clab -in .cpi -side left
+pipe.tcl:108:label .cpi.cyc -text "0" -width 4 -font $dpyFont -relief ridge -bg $normalBg
+pipe.tcl:109:pack .cpi.cyc -in .cpi -side left
+pipe.tcl:111:label .cpi.ilab -text "Instructions" -font $labFont
+pipe.tcl:112:pack .cpi.ilab -in .cpi -side left
+pipe.tcl:113:label .cpi.instr -text "0" -width 4 -font $dpyFont -relief ridge -bg $normalBg
+pipe.tcl:114:pack .cpi.instr -in .cpi -side left
+pipe.tcl:116:label .cpi.cpilab -text "CPI" -font $labFont
+pipe.tcl:117:pack .cpi.cpilab -in .cpi -side left
+pipe.tcl:118:label .cpi.cpi -text "1.0" -width 5 -font $dpyFont -relief ridge -bg $normalBg
+pipe.tcl:119:pack .cpi.cpi -in .cpi -side left
+pipe.tcl:126:pack .stat -in . -side bottom
+pipe.tcl:128:label .stat.lab -text "Stat"  -width 7 -font $bigLabFont -height $sectionHeight
+pipe.tcl:129:label .stat.val -width 3 -font $dpyFont -relief ridge -bg $normalBg
+pipe.tcl:130:label .stat.fill -width 6 -text ""
+pipe.tcl:131:pack .stat.lab .stat.val .stat.fill -in .stat -side left
+pipe.tcl:139:pack .cc -in .stat -side left
+pipe.tcl:141:label .cc.lab -text "Condition Codes"  -font $bigLabFont -height $sectionHeight
+pipe.tcl:142:pack .cc.lab -in .cc -side left
+pipe.tcl:149:    label .cc.lab$i -width 1 -font $dpyFont -text [lindex $ccnames $i]
+pipe.tcl:150:    pack .cc.lab$i -in .cc -side left
+pipe.tcl:151:    label .cc.cc$i -width 1 -font $dpyFont -relief ridge -bg $normalBg
+pipe.tcl:152:    pack .cc.cc$i -in .cc -side left
+pipe.tcl:162:pack .r -in . -side bottom
+pipe.tcl:165:# wm title .r "Register File" -font $bigLabFont
+pipe.tcl:166:label .r.lab -text "Register File"  -font $bigLabFont -height $sectionHeight
+pipe.tcl:167:pack .r.lab -in .r -side top
+pipe.tcl:170:# pack .r.cntl -fill x -in .r
+pipe.tcl:171:# label .r.labreg -text "Register" -width 10
+pipe.tcl:172:# entry .r.regid -width 3 -relief sunken -textvariable regId -font $dpyFont
+pipe.tcl:173:# label .r.labval -text "Value" -width 10
+pipe.tcl:174:# entry .r.regval -width 8 -relief sunken -textvariable regVal -font $dpyFont
+pipe.tcl:175:# button .r.doset -text "Set" -command {setReg $regId $regVal 1} -width 6
+pipe.tcl:176:# button .r.c -text "Clear" -command clearReg -width 6
+pipe.tcl:177:# pack .r.labreg .r.regid .r.labval .r.regval .r.doset .r.c  -in .r.cntl -side left
+pipe.tcl:183:pack .r.labels -side top -in .r
+pipe.tcl:186:    label .r.lab$i -width 8 -font $dpyFont -text [lindex $regnames $i]
+pipe.tcl:187:    pack .r.lab$i -in .r.labels -side left
+pipe.tcl:192:pack .r.row -side top -in .r
+pipe.tcl:197:    label .r.reg$i -width 8 -font $dpyFont -relief ridge \
+pipe.tcl:198:	    -bg $normalBg
+pipe.tcl:199:    pack .r.reg$i -in .r.row -side left
+pipe.tcl:216:button .cntl.quit -width $cntlBW -text Quit -command exit
+pipe.tcl:217:button .cntl.run -width $cntlBW -text Go -command simGo
+pipe.tcl:218:button .cntl.stop -width $cntlBW -text Stop -command simStop
+pipe.tcl:219:button .cntl.step -width $cntlBW -text Step -command simStep
+pipe.tcl:220:button .cntl.reset -width $cntlBW -text Reset -command simResetAll
+pipe.tcl:221:pack .cntl.quit .cntl.run .cntl.stop .cntl.step .cntl.reset -in .cntl -side left
+pipe.tcl:223:scale .spd -label {Simulator Speed (10*log Hz)} -from -10 -to 30 -length 10c \
+pipe.tcl:224:  -orient horizontal -command setSpeed
+pipe.tcl:233:#radiobutton .md.wedged -text Wedged -variable simMode \
+pipe.tcl:234:#	-value wedged -width 10 -command {setSimMode wedged}
+pipe.tcl:235:#radiobutton .md.stall -text Stall -variable simMode \
+pipe.tcl:236:#	-value stall -width 10 -command {setSimMode stall}
+pipe.tcl:237:#radiobutton .md.forward -text Forward -variable simMode \
+pipe.tcl:238:#	-value forward -width 10 -command {setSimMode forward}
+pipe.tcl:239:#pack .md.wedged .md.stall .md.forward -in .md -side left
+pipe.tcl:299:    pack $win.$lname -in $win -side left
+pipe.tcl:300:    label $win.$lname.t -text $name -font $labFont
+pipe.tcl:301:    label $win.$lname.n -width $width -font $dpyFont -bg lightgray -fg Black
+pipe.tcl:302:    label $win.$lname.c -width $width -font $dpyFont -bg white -relief ridge
+pipe.tcl:303:    pack $win.$lname.t $win.$lname.c $win.$lname.n -in $win.$lname -side top
+pipe.tcl:312:	$win config -text $txt
+pipe.tcl:316:frame .p -width $pipeWidth 
+pipe.tcl:317:pack .p -in . -side bottom
+pipe.tcl:318:label .p.lab -text "Pipeline Registers" -font $bigLabFont -height $sectionHeight
+pipe.tcl:319:pack .p.lab -in .p -side top
+pipe.tcl:320:label .p.mem -text "Memory Stage" -height $pipeHeight -width $pipeWidth -bg NavyBlue -fg White -font $bigLabFont
+pipe.tcl:321:label .p.ex -text "Execute Stage" -height $pipeHeight -width $pipeWidth -bg NavyBlue -fg White -font $bigLabFont
+pipe.tcl:322:label .p.id -text "Decode Stage" -height $pipeHeight -width $pipeWidth -bg NavyBlue -fg White -font $bigLabFont
+pipe.tcl:323:label .p.if -text "Fetch Stage" -height $pipeHeight -width $pipeWidth -bg NavyBlue -fg White -font $bigLabFont
+pipe.tcl:330:pack .p.mw .p.mem .p.em .p.ex .p.e .p.de .p.id .p.fd .p.if .p.pc -in .p -side top -anchor w -expand 1
+pipe.tcl:335:    label $win.name -text "$cstage" -width $labWidth -font $bigLabFont
+pipe.tcl:336:    pack $win.name -in $win.lab -side left
+pipe.tcl:338:    label $win.lab.t  -text " " -font $labFont 
+pipe.tcl:339:    label $win.lab.n -width $labWidth  -text "Input" -anchor w
+pipe.tcl:340:    label $win.lab.c -width $labWidth  -text "State" -anchor w
+pipe.tcl:341:    pack  $win.lab.t $win.lab.c $win.lab.n -in $win.lab -side top
+pipe.tcl:342:    pack $win.lab -in $win -side left
+pipe.tcl:353:    label $win.fill.t -text "" -width $w -bg lightgray
+pipe.tcl:354:    label $win.fill.n -bg white -text "" -width $w -bg lightgray
+pipe.tcl:355:    label $win.fill.c -bg white -text "" -width $w -bg lightgray
+pipe.tcl:356:    pack $win.fill.c $win.fill.t $win.fill.n -in $win.fill -side top -expand 1
+pipe.tcl:357:    pack $win.fill -in $win -side right -expand 1
+pipe.tcl:448:	$rwins($w) config -bg White
+pipe.tcl:450:    if {$a != "none"} { $rwins($a) config -bg $valaBg }
+pipe.tcl:451:    if {$b != "none"} { $rwins($b) config -bg $valbBg }
+pipe.tcl:454:    .p.de.vala.t config -bg $valaBg
+pipe.tcl:455:    .p.de.valb.t config -bg $valbBg
+pipe.tcl:465:pack .c.cntl -in .c -side top -anchor w
+pipe.tcl:466:label .c.filelab -width 10 -text "File"
+pipe.tcl:467:entry .c.filename -width 20 -relief sunken -textvariable codeFile \
+pipe.tcl:468:	-font $dpyFont -bg white
+pipe.tcl:469:button .c.loadbutton -width $cntlBW -command {loadCode $codeFile} -text Load
+pipe.tcl:470:pack .c.filelab .c.filename .c.loadbutton -in .c.cntl -side left
+pipe.tcl:481:    pack .c.t -in .c -side top -anchor w
+pipe.tcl:484:    pack .c.tr -in .c.t -side top -anchor nw
+pipe.tcl:505:    pack .c.tr.$addr -in .c.tr -side top -anchor w
+pipe.tcl:506:    label .c.tr.$addr.a -width 5 -text [format "0x%x" $addr] -font $codeFont
+pipe.tcl:507:    label .c.tr.$addr.i -width 12 -text $op -font $codeFont 
+pipe.tcl:508:    label .c.tr.$addr.s -width 2 -text "" -font $codeFont -bg white
+pipe.tcl:509:    label .c.tr.$addr.t -text $text -font $codeFont
+pipe.tcl:511:	    .c.tr.$addr.t -in .c.tr.$addr -side left
+pipe.tcl:523:	.c.tr.$a.s config -text ""
+pipe.tcl:529:	    .c.tr.$a.s config -text $t
+pipe.tcl:550:pack .m.t -in .m -side top -anchor w
+pipe.tcl:552:label .m.t.lab -width 6 -font $dpyFont -text "      "
+pipe.tcl:553:pack .m.t.lab -in .m.t -side left
+pipe.tcl:555:    label .m.t.a$i -width 8 -font $dpyFont -text [format "  0x---%x" [expr $i % 16]]
+pipe.tcl:556:    pack .m.t.a$i -in .m.t -side left
+pipe.tcl:575:    pack .m.e -in .m -side top -anchor w
+pipe.tcl:581:	pack .m.e.r$i -side bottom -in .m.e
+pipe.tcl:582:	label .m.e.r$i.lab -width 6 -font $dpyFont -text [format "0x%.3x-"  [expr $addr / 16]]
+pipe.tcl:583:	pack .m.e.r$i.lab -in .m.e.r$i -side left
+pipe.tcl:587:	    label .m.e.v$a -width 8 -font $dpyFont -relief ridge \
+pipe.tcl:588:                -bg $normalBg
+pipe.tcl:589:	    pack .m.e.v$a -in .m.e.r$i -side left
+pipe.tcl:599:    .m.e.v$Addr config -text [format %8x $Val]
+pipeline.h:57:/* bpd denotes bits per digit  Should be in range 1-4,
+psim.c:2: * psim.c - Pipelined Y86 simulator
+psim.c:32:/* according to the -n argument supplied to hcl2c */
+psim.c:36:int gui_mode = FALSE;    /* Run in GUI mode instead of TTY mode? (-g) */
+psim.c:39:bool_t verbosity = 0;    /* Verbosity level [TTY only] (-v) */ 
+psim.c:40:int instr_limit = 10000; /* Instruction limit [TTY only] (-l) */
+psim.c:41:bool_t do_check = FALSE; /* Test with ISA simulator? [TTY only] (-t) */
+psim.c:68: * sim_main - main simulator routine. This function is called from the
+psim.c:79:    while ((c = getopt(argc, argv, "htgl:v:")) != -1) {
+psim.c:109:    if (optind < argc - 1) {
+psim.c:130:    /* Otherwise, run the simulator in TTY mode (no -g flag) */
+psim.c:137: * run_tty_sim - Run the simulator in TTY mode
+psim.c:172:        free_reg(isa_state->r);
+psim.c:173:        free_mem(isa_state->m);
+psim.c:174:        isa_state->m = copy_mem(mem);
+psim.c:175:        isa_state->r = copy_reg(reg);
+psim.c:176:        isa_state->cc = cc;
+psim.c:203:        if (diff_reg(isa_state->r, reg, NULL)) {
+psim.c:207:                diff_reg(isa_state->r, reg, stdout);
+psim.c:210:        if (diff_mem(isa_state->m, mem, NULL)) {
+psim.c:214:                diff_mem(isa_state->m, mem, stdout);
+psim.c:217:        if (isa_state->cc != result_cc) {
+psim.c:221:                        cc_name(isa_state->cc), cc_name(result_cc));
+psim.c:240: * usage - print helpful diagnostic information
+psim.c:244:    printf("Usage: %s [-htg] [-l m] [-v n] file.yo\n", name);
+psim.c:246:    printf("   -h     Print this message\n");
+psim.c:247:    printf("   -g     Run in GUI mode instead of TTY mode (default TTY)\n");  
+psim.c:248:    printf("   -l m   Set instruction limit to m [TTY mode only] (default %d)\n", instr_limit);
+psim.c:249:    printf("   -v n   Set verbosity level to 0 <= n <= 2 [TTY mode only] (default %d)\n", verbosity);
+psim.c:250:    printf("   -t     Test result against ISA simulator [TTY mode only]\n");
+psim.c:355:        case IF_STAGE : pc_state->op     = P_BUBBLE; break;
+psim.c:356:        case ID_STAGE : if_id_state->op  = P_BUBBLE; break;
+psim.c:357:        case EX_STAGE : id_ex_state->op  = P_BUBBLE; break;
+psim.c:358:        case MEM_STAGE: ex_mem_state->op = P_BUBBLE; break;
+psim.c:359:        case WB_STAGE : mem_wb_state->op = P_BUBBLE; break;
+psim.c:367:        case IF_STAGE : pc_state->op     = P_STALL; break;
+psim.c:368:        case ID_STAGE : if_id_state->op  = P_STALL; break;
+psim.c:369:        case EX_STAGE : id_ex_state->op  = P_STALL; break;
+psim.c:370:        case MEM_STAGE: ex_mem_state->op = P_STALL; break;
+psim.c:371:        case WB_STAGE : mem_wb_state->op = P_STALL; break;
+psim.c:393:    pc_next   = pc_state->next;
+psim.c:394:    pc_curr   = pc_state->current;
+psim.c:396:    if_id_next = if_id_state->next;
+psim.c:397:    if_id_curr = if_id_state->current;
+psim.c:399:    id_ex_next = id_ex_state->next;
+psim.c:400:    id_ex_curr = id_ex_state->current;
+psim.c:402:    ex_mem_next = ex_mem_state->next;
+psim.c:403:    ex_mem_curr = ex_mem_state->current;
+psim.c:405:    mem_wb_next = mem_wb_state->next;
+psim.c:406:    mem_wb_curr = mem_wb_state->current;
+psim.c:478:    sim_log("F: predPC = 0x%x\n", pc_curr->pc);
+psim.c:481:            iname(HPACK(if_id_curr->icode, if_id_curr->ifun)),
+psim.c:482:            reg_name(if_id_curr->ra), reg_name(if_id_curr->rb),
+psim.c:483:            if_id_curr->valc, if_id_curr->valp,
+psim.c:484:            stat_name(if_id_curr->status));
+psim.c:487:            iname(HPACK(id_ex_curr->icode, id_ex_curr->ifun)),
+psim.c:488:            id_ex_curr->valc, id_ex_curr->vala, id_ex_curr->valb,
+psim.c:489:            reg_name(id_ex_curr->srca), reg_name(id_ex_curr->srcb),
+psim.c:490:            reg_name(id_ex_curr->deste), reg_name(id_ex_curr->destm),
+psim.c:491:            stat_name(id_ex_curr->status));
+psim.c:494:            iname(HPACK(ex_mem_curr->icode, ex_mem_curr->ifun)),
+psim.c:495:            ex_mem_curr->takebranch,
+psim.c:496:            ex_mem_curr->vale, ex_mem_curr->vala,
+psim.c:497:            reg_name(ex_mem_curr->deste), reg_name(ex_mem_curr->destm),
+psim.c:498:            stat_name(ex_mem_curr->status));
+psim.c:501:            iname(HPACK(mem_wb_curr->icode, mem_wb_curr->ifun)),
+psim.c:502:            mem_wb_curr->vale, mem_wb_curr->valm,
+psim.c:503:            reg_name(mem_wb_curr->deste), reg_name(mem_wb_curr->destm),
+psim.c:504:            stat_name(mem_wb_curr->status));
+psim.c:513:    byte_t wb_status = mem_wb_curr->status;
+psim.c:514:    byte_t mem_status = mem_wb_next->status;
+psim.c:521:    /* Update program-visible state */
+psim.c:526:    if (pc_state->op == P_ERROR)
+psim.c:527:        pc_curr->status = STAT_PIP;
+psim.c:528:    if (if_id_state->op == P_ERROR)
+psim.c:529:        if_id_curr->status = STAT_PIP;
+psim.c:530:    if (id_ex_state->op == P_ERROR)
+psim.c:531:        id_ex_curr->status = STAT_PIP;
+psim.c:532:    if (ex_mem_state->op == P_ERROR)
+psim.c:533:        ex_mem_curr->status = STAT_PIP;
+psim.c:534:    if (mem_wb_state->op == P_ERROR)
+psim.c:535:        mem_wb_curr->status = STAT_PIP;
+psim.c:548:    if (id_ex_curr->status != STAT_AOK
+psim.c:549:            && id_ex_curr->status != STAT_BUB) {
+psim.c:550:        if_id_state->op = P_BUBBLE;
+psim.c:551:        id_ex_state->op = P_BUBBLE;
+psim.c:556:    if (mem_wb_curr->status != STAT_BUB && mem_wb_curr->icode != I_POP2) {
+psim.c:571:   - An error status is encountered in WB.
+psim.c:572:   - max_instr instructions have completed through WB
+psim.c:573:   - max_cycle cycles have been simulated
+psim.c:585:        run_status = sim_step_pipe(max_instr-icount, ccount);
+psim.c:645:    result->current = malloc(count);
+psim.c:646:    result->next = malloc(count);
+psim.c:647:    memcpy(result->current, bubble_val, count);
+psim.c:648:    memcpy(result->next, bubble_val, count);
+psim.c:649:    result->count = count;
+psim.c:650:    result->op = P_LOAD;
+psim.c:651:    result->bubble_val = bubble_val;
+psim.c:662:        switch (p->op)
+psim.c:666:                memcpy(p->current, p->bubble_val, p->count);
+psim.c:671:                memcpy(p->current, p->next, p->count);
+psim.c:675:                memcpy(p->current, p->bubble_val, p->count);
+psim.c:682:        if (p->op != P_ERROR)
+psim.c:683:            p->op = P_LOAD;
+psim.c:693:        memcpy(p->current, p->bubble_val, p->count);
+psim.c:694:        memcpy(p->next, p->bubble_val, p->count);
+psim.c:695:        p->op = P_LOAD;
+psim.c:707:/* bpd denotes bits per digit  Should be in range 1-4,
+psim.c:712:    unsigned mask = (1 << bpd) - 1;
+psim.c:713:    for (digit = (bpw-1)/bpd; digit >= 0; digit--) {
+psim.c:720:/* bpd denotes bits per digit  Should be in range 1-4,
+psim.c:725:    unsigned mask = (1 << bpd) - 1;
+psim.c:726:    for (digit = (bpw-1)/bpd; digit >= 0; digit--) {
+psim.c:783:    if_id_next->icode = gen_f_icode();
+psim.c:784:    if_id_next->ifun  = gen_f_ifun();
+psim.c:788:                iname(HPACK(if_id_next->icode, if_id_next->ifun)));
+psim.c:794:    if_id_next->status = gen_f_stat();
+psim.c:801:    if_id_next->ra = HI4(regids);
+psim.c:802:    if_id_next->rb = LO4(regids);
+psim.c:807:    if_id_next->valp = valp;
+psim.c:808:    if_id_next->valc = valc;
+psim.c:810:    pc_next->pc = gen_f_predPC();
+psim.c:812:    pc_next->status = (if_id_next->status == STAT_AOK) ? STAT_AOK : STAT_BUB;
+psim.c:814:    if_id_next->stage_pc = f_pc;
+psim.c:841:    id_ex_next->srca = gen_d_srcA();
+psim.c:842:    id_ex_next->srcb = gen_d_srcB();
+psim.c:843:    id_ex_next->deste = gen_d_dstE();
+psim.c:844:    id_ex_next->destm = gen_d_dstM();
+psim.c:847:    d_regvala = get_reg_val(reg, id_ex_next->srca);
+psim.c:848:    d_regvalb = get_reg_val(reg, id_ex_next->srcb);
+psim.c:851:    id_ex_next->vala = gen_d_valA();
+psim.c:852:    id_ex_next->valb = gen_d_valB();
+psim.c:854:    id_ex_next->icode = if_id_curr->icode;
+psim.c:855:    id_ex_next->ifun = if_id_curr->ifun;
+psim.c:856:    id_ex_next->valc = if_id_curr->valc;
+psim.c:857:    id_ex_next->stage_pc = if_id_curr->stage_pc;
+psim.c:858:    id_ex_next->status = if_id_curr->status;
+psim.c:878:    e_bcond = 	cond_holds(cc, id_ex_curr->ifun);
+psim.c:880:    ex_mem_next->takebranch = e_bcond;
+psim.c:882:    if (id_ex_curr->icode == I_JMP)
+psim.c:884:                iname(HPACK(id_ex_curr->icode, id_ex_curr->ifun)),
+psim.c:886:                ex_mem_next->takebranch ? "" : "not ");
+psim.c:890:    ex_mem_next->vale = aluout;
+psim.c:891:    sim_log("\tExecute: ALU: %c 0x%x 0x%x --> 0x%x\n",
+psim.c:899:    ex_mem_next->icode = id_ex_curr->icode;
+psim.c:900:    ex_mem_next->ifun = id_ex_curr->ifun;
+psim.c:901:    ex_mem_next->vala = gen_e_valA();
+psim.c:902:    ex_mem_next->deste = gen_e_dstE();
+psim.c:903:    ex_mem_next->destm = id_ex_curr->destm;
+psim.c:904:    ex_mem_next->srca = id_ex_curr->srca;
+psim.c:905:    ex_mem_next->status = id_ex_curr->status;
+psim.c:906:    ex_mem_next->stage_pc = id_ex_curr->stage_pc;
+psim.c:922:    mem_data = ex_mem_curr->vala;
+psim.c:942:        mem_wb_next->valm = test_memory(mem, mem_addr);
+psim.c:944:    mem_wb_next->icode = ex_mem_curr->icode;
+psim.c:945:    mem_wb_next->ifun = ex_mem_curr->ifun;
+psim.c:946:    mem_wb_next->vale = ex_mem_curr->vale;
+psim.c:947:    mem_wb_next->valm = valm;
+psim.c:948:    mem_wb_next->deste = ex_mem_curr->deste;
+psim.c:949:    mem_wb_next->destm = ex_mem_curr->destm;
+psim.c:950:    mem_wb_next->status = gen_m_stat();
+psim.c:951:    mem_wb_next->stage_pc = ex_mem_curr->stage_pc;
+psim.c:978:    pc_state->op = pipe_cntl("PC", gen_F_stall(), gen_F_bubble());
+psim.c:979:    if_id_state->op = pipe_cntl("ID", gen_D_stall(), gen_D_bubble());
+psim.c:980:    id_ex_state->op = pipe_cntl("EX", gen_E_stall(), gen_E_bubble());
+psim.c:981:    ex_mem_state->op = pipe_cntl("MEM", gen_M_stall(), gen_M_bubble());
+psim.c:982:    mem_wb_state->op = pipe_cntl("WB", gen_W_stall(), gen_W_bubble());
+README:21:psim	std		pipe-std.hcl	  Standard simulator (default)
+README:22:psim	broken		pipe-broken.hcl   Does not handle any hazards
+README:23:psim	full		pipe-full.hcl	  For adding iaddl and leave
+README:24:psim	nobypass	pipe-nobypass.hcl For implementing PIPE-
+README:25:					  (called pipe-stall.hcl in text)
+README:26:psim	lf		pipe-lf.hcl	  For implementing load forwarding
+README:27:psim	nt		pipe-nt.hcl	  For implementing NT branch prediction
+README:28:psim	btfnt		pipe-btfnt.hcl	  For implementing BTFNT branch pred.
+README:29:psim	1w		pipe-1w.hcl	  For implementing single write port
+README:50:on Problems 4.52 and 4.53, which require to modify pipe-full.hcl, then 
+README:55:would then make the pipe-full.hcl version of PIPE.
+README:63:Usage: psim [-htg] [-l m] [-v n] file.yo
+README:67:   -h     Print this message
+README:68:   -g     Run in GUI mode instead of TTY mode (default TTY mode)
+README:69:   -l m   Set instruction limit to m [TTY mode only] (default 10000)
+README:70:   -v n   Set verbosity level to 0 <= n <= 2 [TTY mode only] (default 2)
+README:71:   -t     Test result against the ISA simulator (yis) [TTY model only]
+README:78:Makefile-sim		Makefile for the student distribution
+README:89:* Preconstructed driver programs (by gen-driver.pl)
+README:90:sdriver.ys		Driver that calls ncopy.ys on a short (4-word) array
+README:91:ldriver.ys		Driver that calls ncopy.ys on a longer (63-word) array 
+README:96:gen-ncopy.pl	        Generates versions of benchmark program with various
+README:100:gen-driver.pl		Generate a driver program for an arbitrary ncopy 
+README:109:check-len.pl		Determines number of bytes in .yo representation of
+README:117:pipe-std.hcl		The standard PIPE processor described in the text
+README:118:pipe-broken.hcl		A simulator that does not detect or handle hazards
+README:122:pipe-nobypass.hcl	4.51: Build version of PIPE without bypassing 
+README:123:			(called pipe-stall.hcl in the text)
+README:124:pipe-full.hcl		4.52-53: Add iaddl and leave instructions to PIPE
+README:125:pipe-nt.hcl		4.54: Implement branch not taken strategy
+README:126:pipe-btfnt.hcl		4.55: Implement back-taken forward-not-taken strategy
+README:127:pipe-lf.hcl		4.56: Implement load forwarding logic
+README:128:pipe-1w.hcl		4.57: Implement single ported register file
+README:131:pipe-nobypass-ans.hcl	4.51 solution
+README:132:pipe-full-ans.hcl	4.52-53 solutions
+README:133:pipe-nt-ans.hcl		4.54 solution
+README:134:pipe-btfnt-ans.hcl	4.55 solution
+README:135:pipe-lf-ans.hcl		4.56 solutions
+README:136:pipe-1w-ans.hcl		4.57 solutions
+sdriver.yo:18:                      | #/* $begin ncopy-ys */
+sdriver.yo:20:                      | # ncopy.ys - Copy a src block of len ints to dst.
+sdriver.yo:32:  0x02e: a06f         | 	pushl %esi		# Save callee-save regs
+sdriver.yo:53:  0x070: 6172         | 	subl %edi, %edx		# len--
+sdriver.yo:63:  0x083: b07f         | 	popl %edi               # Restore callee-save registers
+sdriver.yo:72:                      | #/* $end ncopy-ys */
+sdriver.yo:82:  0x098: fdffffff     | 	.long -3
+sdriver.yo:83:  0x09c: fcffffff     | 	.long -4
+sdriver.ys:18:#/* $begin ncopy-ys */
+sdriver.ys:20:# ncopy.ys - Copy a src block of len ints to dst.
+sdriver.ys:32:	pushl %esi		# Save callee-save regs
+sdriver.ys:53:	subl %edi, %edx		# len--
+sdriver.ys:63:	popl %edi               # Restore callee-save registers
+sdriver.ys:72:#/* $end ncopy-ys */
+sdriver.ys:82:	.long -3
+sdriver.ys:83:	.long -4
+sim.h:110:  - A status error is encountered in WB.
+sim.h:111:  - max_instr instructions have completed through WB
+sim.h:112:  - max_cycle cycles have been simulated
+stages.h:2: * stages.h - Defines the layout of the pipe registers

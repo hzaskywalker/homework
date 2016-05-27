@@ -1,0 +1,97 @@
+.pos 0
+irmovl 0, %ecx
+test 0x00000f08(%ecx), %eax
+addl %eax, %eax
+je A
+jmp B
+
+A:
+irmovl 0, %ecx
+rmmovl %ecx, 0x00001001(%ecx)
+test 0x00001005(%ecx), %ebx
+irmovl 100, %ebx
+ALOOP:
+    irmovl 0, %ecx
+    rmmovl %ebx, 0x00000f00(%ecx)
+    AWAIT:
+        mrmovl 0x00001005(%ecx), %ebx
+        addl %ebx, %ebx
+    je AWAIT
+    test 0x00001010(%ecx), %edx
+
+    irmovl 1024, %edx
+    irmovl 0, %ecx
+    irmovl 0x00002000, %eax
+
+    INITA:
+        rmmovl %ecx, (%eax)
+        irmovl 4, %ebx
+        addl %ebx, %eax
+        irmovl 1, %ebx
+        subl %ebx, %edx
+    jne INITA
+
+    mrmovl 0x00000f00(%ecx), %ebx
+    rrmovl %ebx, %edx
+    irmovl 924, %ebx
+    addl %ebx, %edx
+    irmovl 0x00002000, %eax
+    irmovl 1, %ebx
+    irmovl 4, %ecx
+
+    ALOOP3:
+        rmmovl %ebx, (%eax)
+        addl %ecx, %eax
+        subl %ebx, %edx
+    jne ALOOP3
+
+    rmmovl %edx, 0x00001005(%edx)
+    rmmovl %edx, 0x00001015(%edx)
+    irmovl 1, %ecx
+    rmmovl %ecx, 0x00001001(%edx)
+
+    irmovl 0, %ecx
+    mrmovl 0x00000f00(%ecx), %ebx
+    irmovl 1, %ecx
+    subl %ecx, %ebx
+jne ALOOP
+irmovl 0, %ecx
+irmovl 2, %ebx
+rmmovl %ebx, 0x00001015(%ecx)
+halt
+
+B:
+BLOOP:
+    irmovl 0, %ecx
+    BWAIT:
+        mrmovl 0x00001001(%ecx), %ebx
+        addl %ebx, %ebx
+    je BWAIT
+
+    mrmovl 0x00001015(%ecx), %edx 
+    irmovl -2, %ecx
+    addl %ecx, %edx
+    je HALT
+
+    irmovl 0, %ecx
+    rmmovl %ecx, 0x00001001(%ecx)
+
+    irmovl 4, %ebx
+    irmovl 0, %edx
+    irmovl 0x00002000, %eax
+    BLOOP2:
+        addl %edx, %ecx
+        mrmovl (%eax), %edx
+        addl %ebx, %eax
+        addl %ebx, %edx
+        subl %ebx, %edx
+    jne BLOOP2
+
+    irmovl 0, %edx
+    rmmovl %ecx, 0x00001010(%edx)
+    irmovl 1, %ecx
+    rmmovl %ecx, 0x00001005(%edx)
+jmp BLOOP
+
+HALT:
+    halt

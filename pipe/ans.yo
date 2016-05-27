@@ -1,0 +1,97 @@
+  0x000:              | .pos 0
+  0x000: 30f100000000 | irmovl 0, %ecx
+  0x006: f001080f0000 | test 0x00000f08(%ecx), %eax
+  0x00c: 6000         | addl %eax, %eax
+  0x00e: 7318000000   | je A
+  0x013: 70f1000000   | jmp B
+                      | 
+  0x018:              | A:
+  0x018: 30f100000000 | irmovl 0, %ecx
+  0x01e: 401101100000 | rmmovl %ecx, 0x00001001(%ecx)
+  0x024: f03105100000 | test 0x00001005(%ecx), %ebx
+  0x02a: 30f364000000 | irmovl 100, %ebx
+  0x030:              | ALOOP:
+  0x030: 30f100000000 |     irmovl 0, %ecx
+  0x036: 4031000f0000 |     rmmovl %ebx, 0x00000f00(%ecx)
+  0x03c:              |     AWAIT:
+  0x03c: 503105100000 |         mrmovl 0x00001005(%ecx), %ebx
+  0x042: 6033         |         addl %ebx, %ebx
+  0x044: 733c000000   |     je AWAIT
+  0x049: f02110100000 |     test 0x00001010(%ecx), %edx
+                      | 
+  0x04f: 30f200040000 |     irmovl 1024, %edx
+  0x055: 30f100000000 |     irmovl 0, %ecx
+  0x05b: 30f000200000 |     irmovl 0x00002000, %eax
+                      | 
+  0x061:              |     INITA:
+  0x061: 401000000000 |         rmmovl %ecx, (%eax)
+  0x067: 30f304000000 |         irmovl 4, %ebx
+  0x06d: 6030         |         addl %ebx, %eax
+  0x06f: 30f301000000 |         irmovl 1, %ebx
+  0x075: 6132         |         subl %ebx, %edx
+  0x077: 7461000000   |     jne INITA
+                      | 
+  0x07c: 5031000f0000 |     mrmovl 0x00000f00(%ecx), %ebx
+  0x082: 2032         |     rrmovl %ebx, %edx
+  0x084: 30f39c030000 |     irmovl 924, %ebx
+  0x08a: 6032         |     addl %ebx, %edx
+  0x08c: 30f000200000 |     irmovl 0x00002000, %eax
+  0x092: 30f301000000 |     irmovl 1, %ebx
+  0x098: 30f104000000 |     irmovl 4, %ecx
+                      | 
+  0x09e:              |     ALOOP3:
+  0x09e: 403000000000 |         rmmovl %ebx, (%eax)
+  0x0a4: 6010         |         addl %ecx, %eax
+  0x0a6: 6132         |         subl %ebx, %edx
+  0x0a8: 749e000000   |     jne ALOOP3
+                      | 
+  0x0ad: 402205100000 |     rmmovl %edx, 0x00001005(%edx)
+  0x0b3: 402215100000 |     rmmovl %edx, 0x00001015(%edx)
+  0x0b9: 30f101000000 |     irmovl 1, %ecx
+  0x0bf: 401201100000 |     rmmovl %ecx, 0x00001001(%edx)
+                      | 
+  0x0c5: 30f100000000 |     irmovl 0, %ecx
+  0x0cb: 5031000f0000 |     mrmovl 0x00000f00(%ecx), %ebx
+  0x0d1: 30f101000000 |     irmovl 1, %ecx
+  0x0d7: 6113         |     subl %ecx, %ebx
+  0x0d9: 7430000000   | jne ALOOP
+  0x0de: 30f100000000 | irmovl 0, %ecx
+  0x0e4: 30f302000000 | irmovl 2, %ebx
+  0x0ea: 403115100000 | rmmovl %ebx, 0x00001015(%ecx)
+  0x0f0: 00           | halt
+                      | 
+  0x0f1:              | B:
+  0x0f1:              | BLOOP:
+  0x0f1: 30f100000000 |     irmovl 0, %ecx
+  0x0f7:              |     BWAIT:
+  0x0f7: 503101100000 |         mrmovl 0x00001001(%ecx), %ebx
+  0x0fd: 6033         |         addl %ebx, %ebx
+  0x0ff: 73f7000000   |     je BWAIT
+                      | 
+  0x104: 502115100000 |     mrmovl 0x00001015(%ecx), %edx 
+  0x10a: 30f1feffffff |     irmovl -2, %ecx
+  0x110: 6012         |     addl %ecx, %edx
+  0x112: 7365010000   |     je HALT
+                      | 
+  0x117: 30f100000000 |     irmovl 0, %ecx
+  0x11d: 401101100000 |     rmmovl %ecx, 0x00001001(%ecx)
+                      | 
+  0x123: 30f304000000 |     irmovl 4, %ebx
+  0x129: 30f200000000 |     irmovl 0, %edx
+  0x12f: 30f000200000 |     irmovl 0x00002000, %eax
+  0x135:              |     BLOOP2:
+  0x135: 6021         |         addl %edx, %ecx
+  0x137: 502000000000 |         mrmovl (%eax), %edx
+  0x13d: 6030         |         addl %ebx, %eax
+  0x13f: 6032         |         addl %ebx, %edx
+  0x141: 6132         |         subl %ebx, %edx
+  0x143: 7435010000   |     jne BLOOP2
+                      | 
+  0x148: 30f200000000 |     irmovl 0, %edx
+  0x14e: 401210100000 |     rmmovl %ecx, 0x00001010(%edx)
+  0x154: 30f101000000 |     irmovl 1, %ecx
+  0x15a: 401205100000 |     rmmovl %ecx, 0x00001005(%edx)
+  0x160: 70f1000000   | jmp BLOOP
+                      | 
+  0x165:              | HALT:
+  0x165: 00           |     halt
