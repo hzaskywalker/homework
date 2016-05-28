@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2016.4.23)  27 MAY 2016 21:30
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2016.4.23)  28 MAY 2016 23:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1324,14 +1324,7 @@ File: se-ascii-print.def 2011/12/02 v1.10 stringenc: Printable ASCII characters
 )
 [1
 
-]
-Overfull \hbox (21.4668pt too wide) in paragraph at lines 197--198
-[]\EU1/FandolSong-Regular(0)/m/n/10 所 以 第 一 步 修 改 就 是 将 \EU1/lmr/m/n/10 isa.c \
-EU1/FandolSong-Regular(0)/m/n/10 中 所 有 涉 及 到 内 存 读 写 的 $\OML/cmm/m/it/10 get[]o
-rd[]al; get[]yte[]al; set[]ord[]al; set[]yte[]al; load[]em$
- []
-
-[2]
+] [2]
 *************************************************
 * fontspec warning: "script-not-exist"
 * 
@@ -1372,7 +1365,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 328.
 Here is how much of TeX's memory you used:
  26437 strings out of 493706
  495704 string characters out of 6145769
- 552969 words of memory out of 5000000
+ 552974 words of memory out of 5000000
  29523 multiletter control sequences out of 15000+600000
  16078 words of font info for 85 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191

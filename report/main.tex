@@ -194,9 +194,9 @@ cache.c则实现了一个cache。首先根据shareinfo.h申请访问mem和bus。
 \subsubsection{同时运行两个处理器}
 假定两个cache进程已经运行，则cpu往内存进行的读写操作都通过msg发出请求进行即可。从这个角度看，只要cpu通过编号确定与哪个cache连接即可，剩下的操作与单核cpu完全一致。
 
-所以第一步修改就是将isa.c中所有涉及到内存读写的$get_word_val, get_byte_val, set_word_val, set_byte_val, load_mem$中所有对content的读写替换成通过msg向cache发出读写请求。
+所以第一步修改就是将isa.c中所有涉及到内存读写的get\_word\_val, get\_byte\_val, set\_word\_val, set\_byte\_val, load\_mem中所有对content的读写替换成通过msg向cache发出读写请求。
 
-值得注意的是，此时如果用两个模拟器同时运行程序的话，$load_mem$会将两个代码加载在同一个地方，所以我还修改了相应的函数和读取代码阶段valp的值将代码放置在不同的内存地址。
+值得注意的是，此时如果用两个模拟器同时运行程序的话，load\_mem会将两个代码加载在同一个地方，所以我还修改了相应的函数和读取代码阶段valp的值将代码放置在不同的内存地址。
 
 \subsubsection{原子操作test}
 为了使得运行相同代码时代码能够得知自己的身份，我加入了原子操作test:
@@ -231,7 +231,7 @@ A:
 irmovl 0, %ecx
 rmmovl %ecx, 0x00001001(%ecx)
 test 0x00001005(%ecx), %ebx
-irmovl 100, %ebx
+irmovl 101, %ebx
 ALOOP:
     irmovl 0, %ecx
     rmmovl %ebx, 0x00000f00(%ecx)
@@ -241,7 +241,7 @@ ALOOP:
     je AWAIT
     test 0x00001010(%ecx), %edx
 
-    irmovl 1024, %edx
+    irmovl 1025, %edx
     irmovl 0, %ecx
     irmovl 0x00002000, %eax
 
@@ -255,7 +255,7 @@ ALOOP:
 
     mrmovl 0x00000f00(%ecx), %ebx
     rrmovl %ebx, %edx
-    irmovl 924, %ebx
+    irmovl 923, %ebx
     addl %ebx, %edx
     irmovl 0x00002000, %eax
     irmovl 1, %ebx
@@ -322,7 +322,7 @@ HALT:
 \subsection{代码的运行}
 进入misc/cache/ make之后，再在pipe/进行make即可运行。
 
-在终端键入$python3 run_two_sim.py$即可运行。
+在终端键入python3 run\_two\_sim.py即可运行。
 
-程序会依次从1024输出到926。
+程序会依次从1024输出到925。
 \end{document}
