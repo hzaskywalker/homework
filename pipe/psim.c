@@ -40,6 +40,7 @@ bool_t verbosity = 0;    /* Verbosity level [TTY only] (-v) */
 int instr_limit = 100000000; /* Instruction limit [TTY only] (-l) */
 bool_t do_check = FALSE; /* Test with ISA simulator? [TTY only] (-t) */
 
+//set PSIM_ID=-1 to run in one cpu mode
 int PSIM_ID = 0;
 int START_PLACE = 0;
 

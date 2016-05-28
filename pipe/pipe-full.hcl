@@ -208,7 +208,7 @@ int d_srcB = [
 
 ## What register should be used as the E destination?
 int d_dstE = [
-	D_icode in { IRRMOVL, IIRMOVL, IOPL} : D_rB;
+	D_icode in { IRRMOVL, IIRMOVL, IOPL, IIADDL} : D_rB;
 	D_icode in { IPUSHL, IPOPL, ICALL, IRET, ILEAVE } : RESP;
 	1 : RNONE;  # Don't write any register
 ];
