@@ -9,7 +9,7 @@
   0x018: 30f100000000 | irmovl 0, %ecx
   0x01e: 401101100000 | rmmovl %ecx, 0x00001001(%ecx)
   0x024: f03105100000 | test 0x00001005(%ecx), %ebx
-  0x02a: 30f364000000 | irmovl 100, %ebx
+  0x02a: 30f365000000 | irmovl 101, %ebx
   0x030:              | ALOOP:
   0x030: 30f100000000 |     irmovl 0, %ecx
   0x036: 4031000f0000 |     rmmovl %ebx, 0x00000f00(%ecx)
@@ -19,7 +19,7 @@
   0x044: 733c000000   |     je AWAIT
   0x049: f02110100000 |     test 0x00001010(%ecx), %edx
                       | 
-  0x04f: 30f200040000 |     irmovl 1024, %edx
+  0x04f: 30f201040000 |     irmovl 1025, %edx
   0x055: 30f100000000 |     irmovl 0, %ecx
   0x05b: 30f000200000 |     irmovl 0x00002000, %eax
                       | 
@@ -33,7 +33,7 @@
                       | 
   0x07c: 5031000f0000 |     mrmovl 0x00000f00(%ecx), %ebx
   0x082: 2032         |     rrmovl %ebx, %edx
-  0x084: 30f39c030000 |     irmovl 924, %ebx
+  0x084: 30f39b030000 |     irmovl 923, %ebx
   0x08a: 6032         |     addl %ebx, %edx
   0x08c: 30f000200000 |     irmovl 0x00002000, %eax
   0x092: 30f301000000 |     irmovl 1, %ebx

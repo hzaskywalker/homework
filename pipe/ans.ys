@@ -9,7 +9,7 @@ A:
 irmovl 0, %ecx
 rmmovl %ecx, 0x00001001(%ecx)
 test 0x00001005(%ecx), %ebx
-irmovl 100, %ebx
+irmovl 101, %ebx
 ALOOP:
     irmovl 0, %ecx
     rmmovl %ebx, 0x00000f00(%ecx)
@@ -19,7 +19,7 @@ ALOOP:
     je AWAIT
     test 0x00001010(%ecx), %edx
 
-    irmovl 1024, %edx
+    irmovl 1025, %edx
     irmovl 0, %ecx
     irmovl 0x00002000, %eax
 
@@ -33,7 +33,7 @@ ALOOP:
 
     mrmovl 0x00000f00(%ecx), %ebx
     rrmovl %ebx, %edx
-    irmovl 924, %ebx
+    irmovl 923, %ebx
     addl %ebx, %edx
     irmovl 0x00002000, %eax
     irmovl 1, %ebx
