@@ -287,6 +287,11 @@ int ask(cache_t c, int pos, int val, int TYPE){
         if(TYPE!=TEST)
             return Local(c, pos, val, TYPE);
         else if(c->bus[lock_bit(c->id^1)] == 0){
+            /*
+             * here is a bug
+             * ....
+             * sad
+             */
             int ans = Local(c, pos, val, READ);
             Local(c, pos, ans+1, WRITE);
             return ans;
