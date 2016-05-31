@@ -23,6 +23,7 @@
 # assigned to GUIMODE, TKLIBS, and TKINC will override the values that
 # are currently assigned in seq/Makefile and pipe/Makefile.
 all:
+	(cd misc; cd cache; make)
 	(cd misc; make all)
 	(cd pipe; make all GUIMODE=$(GUIMODE) TKLIBS="$(TKLIBS)" TKINC="$(TKINC)")
 	(cd seq; make all GUIMODE=$(GUIMODE) TKLIBS="$(TKLIBS)" TKINC="$(TKINC)")
@@ -30,6 +31,7 @@ all:
 
 clean:
 	rm -f *~ core
+	(cd misc; cd cache; make clean)
 	(cd misc; make clean)
 	(cd pipe; make clean)
 	(cd seq; make clean)
