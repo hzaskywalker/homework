@@ -292,7 +292,7 @@ int mem_addr = [
 ];
 
 ## Set read control signal
-bool mem_read = M_icode in { IMRMOVL, IPOPL, IRET, ILEAVE, ITEST };
+bool mem_read = M_icode in { IMRMOVL, IPOPL, IRET, ILEAVE , ITEST};
 
 ## Set write control signal
 bool mem_write = M_icode in { IRMMOVL, IPUSHL, ICALL };
@@ -332,7 +332,7 @@ int Stat = [
 bool F_bubble = 0;
 bool F_stall =
 	# Conditions for a load/use hazard
-	E_icode in { IMRMOVL, IPOPL, ILEAVE, ITEST } &&
+	E_icode in { IMRMOVL, ITEST, IPOPL, ILEAVE } &&
 	 E_dstM in { d_srcA, d_srcB } ||
 	# Stalling at fetch while ret passes through pipeline
 	IRET in { D_icode, E_icode, M_icode };
@@ -349,7 +349,7 @@ bool D_bubble =
 	(E_icode == IJXX && !e_Cnd) ||
 	# Stalling at fetch while ret passes through pipeline
 	# but not condition for a load/use hazard
-	!(E_icode in { IMRMOVL, IPOPL, ILEAVE } && E_dstM in { d_srcA, d_srcB }) &&
+	!(E_icode in { IMRMOVL, IPOPL, ILEAVE, ITEST } && E_dstM in { d_srcA, d_srcB }) &&
 	  IRET in { D_icode, E_icode, M_icode };
 
 # Should I stall or inject a bubble into Pipeline Register E?
