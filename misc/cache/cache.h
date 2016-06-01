@@ -178,23 +178,10 @@ void Remote(cache_t c, int pos, int val, int TYPE){
             c->flag[idx] = TYPE_I;
         }
     }
-    c->bus[extra_bit(c->id^1)] = (idx==TYPE_S?TYPE_S:c->flag[idx]);
+    c->bus[extra_bit(c->id^1)] = (idx==TYPE_I?TYPE_I:c->flag[idx]);
 }
 
 int Local(cache_t c, int pos, int val, int TYPE){
-#ifdef DEBUG
-    FILE* tmpf = fopen("cache_record.txt", "a");
-    fprintf(tmpf, "%d %d %d %d\n", c->id, TYPE, pos, val);
-    fclose(tmpf);
-
-    tmpf = fopen("mem_tmp.txt", "a");
-    int i=0;
-    for(i=0;i<10;i++){
-        fprintf(tmpf, "%d ", c->mem[i]);
-    }
-    fprintf(tmpf, "\n");
-    fclose(tmpf);
-#endif
     int idx = find_cache_line(c, pos);
     int READ_VAL;
     if(idx == TYPE_I){
@@ -239,6 +226,21 @@ int Local(cache_t c, int pos, int val, int TYPE){
             c->val[idx] = val;
         }
     }
+#ifdef DEBUG
+    FILE* tmpf = fopen("cache_record.txt", "a");
+    if(TYPE==READ)
+        val = READ_VAL;
+    fprintf(tmpf, "%d %d %d %d\n", c->id, TYPE, pos, val);
+    fclose(tmpf);
+
+    tmpf = fopen("mem_tmp.txt", "a");
+    int i=0;
+    for(i=0;i<10;i++){
+        fprintf(tmpf, "%d ", c->mem[i]);
+    }
+    fprintf(tmpf, "\n");
+    fclose(tmpf);
+#endif
     c->hit_time[idx] += 1;
     if(TYPE==READ)
         return READ_VAL;
@@ -274,7 +276,7 @@ int ask(cache_t c, int pos, int val, int TYPE){
             ans = Local(c, pos, val, TYPE);
             return ans;
         }
-        else if(c->bus[lock_bit(c->id^1)] == 0){
+        else{
             /*
              * here is a bug
              * ....
@@ -302,8 +304,8 @@ int ask(cache_t c, int pos, int val, int TYPE){
                 newval = ((ans+1)>>((now-1)*8))%256;
             }
         }
-        c->bus[ask_pos_bit(c->id)] = pos;
-        c->bus[ask_val_bit(c->id)] = val;
+        c->bus[ask_pos_bit(c->id)] = newpos;
+        c->bus[ask_val_bit(c->id)] = newval;
         c->bus[ask_type_bit(c->id)] = newtype;
         c->bus[answer_bit(c->id^1)] = 0;
         c->bus[ask_bit(c->id)] = askNum;
@@ -323,7 +325,7 @@ int ask(cache_t c, int pos, int val, int TYPE){
 }
 
 int ONE_STEP(cache_t c, int pos, int val, int TYPE){
-    if(pos<0 || pos > MAX_MEM_POS){
+    if(pos<0 || pos >= MAX_MEM_POS){
         printf("pos for cache is greater than maximum memory %d or less than 0: %d\n", MAX_MEM_POS, pos);
         exit(0);
     }

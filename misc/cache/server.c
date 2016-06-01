@@ -11,10 +11,10 @@ typedef unsigned char byte_t;
 
 int main(){
     printf("%d %d\n", MEM_NAME, BUS_NAME);
-    volatile int mem_id = shmget(MEM_NAME, MAX_MEM_POS * sizeof(byte_t), IPC_CREAT|0666);
-    volatile int bus_id = shmget(BUS_NAME, MAX_BUS_LEN * sizeof(int), IPC_CREAT|0666);
-    byte_t* mem = shmat(mem_id, 0, 0);
-    int* bus = shmat(bus_id, 0, 0);
+    int mem_id = shmget(MEM_NAME, MAX_MEM_POS * sizeof(byte_t), IPC_CREAT|0666);
+    int bus_id = shmget(BUS_NAME, MAX_BUS_LEN * sizeof(int), IPC_CREAT|0666);
+    volatile byte_t* mem = shmat(mem_id, 0, 0);
+    volatile int* bus = shmat(bus_id, 0, 0);
     if(mem==(byte_t*)-1 || bus == (int*) -1){
         printf("shmat failed mem: %p, bus: %p\n", mem, bus);
         exit(0);

@@ -204,6 +204,7 @@ static void run_tty_sim()
         diff_mem(mem0, mem, stdout);
     }
     if (do_check) {
+        exit(0);
         byte_t e = STAT_AOK;
         int step;
         bool_t match = TRUE;
@@ -301,10 +302,10 @@ word_t cc_in = DEFAULT_CC;
 word_t wb_destE = REG_NONE;
 word_t wb_valE = 0;
 word_t wb_destM = REG_NONE;
+word_t wb_testM = REG_NONE;
 word_t wb_valM = 0;
 word_t mem_addr = 0;
 word_t mem_test = 0;
-word_t mem_test_dstE = 0;
 word_t mem_data = 0;
 bool_t mem_write = FALSE;
 
@@ -387,6 +388,7 @@ void sim_stall_stage(stage_id_t stage) {
 
 
 static int initialized = 0;
+int mem_test_address;
 
 void sim_init()
 {
@@ -460,19 +462,23 @@ static void update_state(bool_t update_mem, bool_t update_cc)
         sim_log("\tWriteback: Wrote 0x%x to register %s\n",
                 wb_valE, reg_name(wb_destE));
         set_reg_val(reg, wb_destE, wb_valE);
+        //printf("set_reg_valE %d %d %d\n", PSIM_ID, wb_destE, wb_valE);
+        //fflush(stdout);
     }
-    if (wb_destM != REG_NONE) {
+    if (wb_destM != REG_NONE && wb_testM == REG_NONE) {
         sim_log("\tWriteback: Wrote 0x%x to register %s\n",
                 wb_valM, reg_name(wb_destM));
         set_reg_val(reg, wb_destM, wb_valM);
+        //printf("set_reg_valM %d %d %d\n", PSIM_ID, wb_destM, wb_valM);
+        //fflush(stdout);
     }
 
     /* Memory write */
 
-    if(mem_test){
-        int ans = test_memory(mem, mem_addr);
-        set_reg_val(reg, mem_test_dstE, ans);
-        printf("PSIM_ID %d test_result:  %d on %d\n", PSIM_ID, ans, mem_addr);
+    if(wb_testM != REG_NONE){
+        set_reg_val(reg, wb_testM, wb_valM);
+        printf("PSIM_ID %d test_result:  %d on %d\n", PSIM_ID, wb_valM, mem_test_address);
+        //fflush(stdout);
     }
 
     if (mem_write && !update_mem) {
@@ -545,12 +551,19 @@ static byte_t sim_step_pipe(int max_instr, int ccount)
     bool_t update_cc = ahead_ex < max_instr;
 
     /* Update program-visible state */
+
     update_state(update_mem, update_cc);
     /* Update pipe registers */
+    /*
+    if(pc_curr->status==P_STALL){
+        printf("haha %d %d\n", PSIM_ID, get_reg_val(reg, 0));
+    }
+    */
     update_pipes();
     tty_report(ccount);
-    if (pc_state->op == P_ERROR)
+    if (pc_state->op == P_ERROR){
         pc_curr->status = STAT_PIP;
+    }
     if (if_id_state->op == P_ERROR)
         if_id_curr->status = STAT_PIP;
     if (id_ex_state->op == P_ERROR)
@@ -833,6 +846,10 @@ void do_if_stage()
     }
     if_id_next->valp = valp;
     if_id_next->valc = valc;
+    /*
+    if(gen_need_regids() && if_id_next->valc)
+        printf("##### vap: %d %d %d\n", if_id_next->ra, if_id_next->rb, if_id_next->valc);
+        */
 
     pc_next->pc = gen_f_predPC();
 
@@ -861,6 +878,10 @@ void do_id_wb_stages()
     wb_valE = gen_w_valE();
     wb_destM = gen_w_dstM();
     wb_valM = gen_w_valM();
+    if(mem_wb_curr->icode == I_TEST)
+        wb_testM = wb_destM;
+    else
+        wb_testM = REG_NONE;
 
     /* Update processor status */
     status = gen_Stat();
@@ -874,6 +895,7 @@ void do_id_wb_stages()
     /* Read the registers */
     d_regvala = get_reg_val(reg, id_ex_next->srca);
     d_regvalb = get_reg_val(reg, id_ex_next->srcb);
+    //printf("%d %d %d %d\n", id_ex_next->srca, id_ex_next->srcb, d_regvala, d_regvalb);
 
     /* Do forwarding and valA selection */
     id_ex_next->vala = gen_d_valA();
@@ -902,7 +924,7 @@ void do_ex_stage()
 
     alua = gen_aluA();
     alub = gen_aluB();
-    e_bcond = 	cond_holds(cc, id_ex_curr->ifun);
+    e_bcond =	cond_holds(cc, id_ex_curr->ifun);
 
     ex_mem_next->takebranch = e_bcond;
 
@@ -951,13 +973,13 @@ void do_mem_stage()
     mem_test = gen_mem_test();
     dmem_error = FALSE;
 
-    if (read) {
+    if (read && !mem_test) {
         dmem_error = dmem_error || !get_word_val(mem, mem_addr, &valm);
         if (!dmem_error)
             sim_log("\tMemory: Read 0x%x from 0x%x\n",
                     valm, mem_addr);
     }
-    if (mem_write) {
+    if (mem_write && !mem_test) {
         word_t sink;
         /* Do a read of address just to check validity */
         dmem_error = dmem_error || !get_word_val(mem, mem_addr, &sink);
@@ -965,8 +987,11 @@ void do_mem_stage()
             sim_log("\tMemory: Invalid address 0x%x\n",
                     mem_addr);
     }
-    if(mem_test){
-        mem_test_dstE =ex_mem_curr->destm;
+    if (mem_test && read){
+        mem_test_address = mem_addr;
+
+        int ans = test_memory(mem, mem_test_address);
+        valm = ans;
     }
     mem_wb_next->icode = ex_mem_curr->icode;
     mem_wb_next->ifun = ex_mem_curr->ifun;
@@ -1002,6 +1027,14 @@ p_stat_t pipe_cntl(char *name, int stall, int bubble)
 
 void do_stall_check()
 {
+    /*
+    if(gen_D_stall()){
+        printf("%d D_stall\n", PSIM_ID);
+    }
+    if(gen_F_stall()){
+        printf("%d stall\n", PSIM_ID);
+    }
+    */
     pc_state->op = pipe_cntl("PC", gen_F_stall(), gen_F_bubble());
     if_id_state->op = pipe_cntl("ID", gen_D_stall(), gen_D_bubble());
     id_ex_state->op = pipe_cntl("EX", gen_E_stall(), gen_E_bubble());

@@ -341,9 +341,12 @@ bool_t get_word_val(mem_t m, word_t pos, word_t *dest)
     */
     val = 0;
     for (i = 0; i < 4; i++){
-        int ans = m->contents[pos+i];
+        int ans;
         if(m->msg!=NULL){
             ans = read_request(m->msg, pos+i);
+        }
+        else{
+            ans = m->contents[pos+i];
         }
         val = val | ans<<(8*i);
     }
@@ -359,8 +362,9 @@ bool_t set_byte_val(mem_t m, word_t pos, byte_t val)
         */
     if(m->msg==NULL)
         m->contents[pos] = val;
-    else
+    else{
         write_request(m->msg, pos, (int)val);
+    }
     return TRUE;
 }
 
