@@ -47,17 +47,24 @@ ALOOP:
 
     rmmovl %edx, 0x00001005(%edx)
     rmmovl %edx, 0x00001015(%edx)
-    irmovl 1, %ecx
-    rmmovl %ecx, 0x00001001(%edx)
 
     irmovl 0, %ecx
     mrmovl 0x00000f00(%ecx), %ebx
     irmovl 1, %ecx
     subl %ecx, %ebx
+    je EndB
+
+    rmmovl %ecx, 0x00001001(%edx)
+    irmovl 0, %ecx
+    mrmovl 0x00000f00(%ecx), %ebx
+    irmovl 1, %ecx
+    subl %ecx, %ebx
 jne ALOOP
-irmovl 0, %ecx
-irmovl 2, %ebx
-rmmovl %ebx, 0x00001015(%ecx)
+EndB:
+    irmovl 0, %ecx
+    irmovl 2, %ebx
+    rmmovl %ebx, 0x00001015(%ecx)
+    rmmovl %ebx, 0x00001001(%ecx)
 halt
 
 B:
