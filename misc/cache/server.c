@@ -29,8 +29,6 @@ int main(){
     for(i=0;i<MAX_BUS_LEN;++i){
         bus[i]=0;
     }
-    FILE* f = fopen("flag", "w");
-    fclose(f);
     while(1){
     }
     return 0;

@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
     char filename[] = "ans_0.txt";
     if(id==1)filename[4] ='1';
     FILE* result = fopen(filename, "w");
-    for(i=0;i<100000;++i){
+    for(i=0;i<10000;++i){
         int pos = rand() % 100, val=rand() % 100, type = rand()%2;
 #ifdef DEBUG
         fprintf(tmpf, "%d %d %d\n", type, pos, val);

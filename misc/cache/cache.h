@@ -28,11 +28,9 @@ typedef struct{
  * 1 2 please lock
  * 3 4 ask
  * 5 6 answer
- * 7 8 ready_ask
  * 9 10 ask_type_bit
  * 11 12 ask_pos_bit
  * 13 14 ask_val_bit
- * 15 16 stop_ask_bit
  * 17 18 extra_bit
  */
 
@@ -42,10 +40,6 @@ int ask_bit(int id){
 
 int answer_bit(int id){
     return id + 5;
-}
-
-int ready_ask_bit(int id){
-    return id + 7;
 }
 
 int ask_type_bit(int id){
@@ -66,10 +60,6 @@ int lock_bit(int id){
 
 int extra_bit(int id){
     return id + 17;
-}
-
-int stop_ask_bit(int id){
-    return id + 15;
 }
 
 /*
@@ -256,26 +246,22 @@ int Local(cache_t c, int pos, int val, int TYPE){
 }
 
 void answer(cache_t c){
-    while(c->bus[lock_bit(c->id^1)] && c->bus[ ask_bit(c->id^1) ] ){
-        c->bus[answer_bit(c->id)] = 1;
-        while(c->bus[ready_ask_bit(c->id^1)]==0){
-        }
-
-        int TYPE = c->bus[ask_type_bit(c->id^1)];
-        int pos = c->bus[ask_pos_bit(c->id^1)];
-        int val = c->bus[ask_val_bit(c->id^1)];
-        Remote(c, pos, val, TYPE);
-
-        c->bus[answer_bit(c->id)] = 0;
-        while(c->bus[stop_ask_bit(c->id^1)]){
+    if(c->bus[lock_bit(c->id^1)]){
+        int askNum = c->bus[ ask_bit(c->id^1) ];
+        while(askNum--){
+            while(c->bus[ask_bit(c->id^1)]==0){
+            }
+            c->bus[ask_bit(c->id^1)] = 0;
+            int TYPE = c->bus[ask_type_bit(c->id^1)];
+            int pos = c->bus[ask_pos_bit(c->id^1)];
+            int val = c->bus[ask_val_bit(c->id^1)];
+            Remote(c, pos, val, TYPE);
+            c->bus[answer_bit(c->id)] = 1;
         }
     }
 }
 
 int ask(cache_t c, int pos, int val, int TYPE){
-    c->bus[stop_ask_bit(c->id)]=0;
-    c->bus[ready_ask_bit(c->id)] = 0;
-    c->bus[extra_bit(c->id)] = TYPE_I;
     int idx = find_cache_line(c, pos);
     int onlylocal = 0, ans=0;
     if(idx!=TYPE_I && 
@@ -284,8 +270,10 @@ int ask(cache_t c, int pos, int val, int TYPE){
              (c->flag[idx] == TYPE_S && TYPE == READ )))
         onlylocal = 1;
     if(c->bus[lock_bit(c->id^1)] == 0 || onlylocal){
-        if(TYPE!=TEST)
-            return Local(c, pos, val, TYPE);
+        if(TYPE!=TEST){
+            ans = Local(c, pos, val, TYPE);
+            return ans;
+        }
         else if(c->bus[lock_bit(c->id^1)] == 0){
             /*
              * here is a bug
@@ -297,24 +285,12 @@ int ask(cache_t c, int pos, int val, int TYPE){
             return ans;
         }
     }
-    c->bus[ask_bit(c->id)] = 1+(TYPE==TEST)*7;
+    int askNum = 1+(TYPE==TEST)*7;
 
-    while(c->bus[ask_bit(c->id)]){
-        while(c->bus[answer_bit(c->id^1)]==0){
-            if(c->bus[ ask_bit(c->id^1)] && (c->id > (c->id^1))){
-                answer(c);
-            }
-        }
-        c->bus[ask_pos_bit(c->id)] = pos;
-        c->bus[ask_val_bit(c->id)] = val;
-        c->bus[ask_type_bit(c->id)] = TYPE;
-        c->bus[stop_ask_bit(c->id)]=1;
-        c->bus[ready_ask_bit(c->id)] = 1;
-        while(c->bus[answer_bit(c->id^1)]){
-        }
+    while(askNum){
         int newtype = TYPE, newpos = pos, newval = val;
         if(TYPE==TEST){
-            int now = c->bus[ask_bit(c->id)];
+            int now = askNum;
             newtype = (now>4)?READ: WRITE;
             if(now>4){
                 newpos = pos + now - 5;
@@ -326,16 +302,22 @@ int ask(cache_t c, int pos, int val, int TYPE){
                 newval = ((ans+1)>>((now-1)*8))%256;
             }
         }
+        c->bus[ask_pos_bit(c->id)] = pos;
+        c->bus[ask_val_bit(c->id)] = val;
+        c->bus[ask_type_bit(c->id)] = newtype;
+        c->bus[answer_bit(c->id^1)] = 0;
+        c->bus[ask_bit(c->id)] = askNum;
+
+        while(c->bus[answer_bit(c->id^1)]==0 && c->bus[lock_bit(c->id^1)]){
+            if(c->bus[ ask_bit(c->id^1)] && (c->id > (c->id^1))){
+                answer(c);
+            }
+        }
         int tmp = Local(c, newpos, newval, newtype);
-        if(TYPE==TEST && 0)
-            printf("haha: %d %d %d %d\n", newpos, newval, newtype, tmp);
         if(newtype == READ){
             ans = ans*256 + tmp;
         }
-        c->bus[ask_bit(c->id)]--;
-        c->bus[stop_ask_bit(c->id)]=0;
-        c->bus[ready_ask_bit(c->id)] = 0;
-        c->bus[extra_bit(c->id)] = TYPE_I;
+        askNum -= 1;
     }
     return ans;
 }
