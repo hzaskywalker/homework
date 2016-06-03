@@ -8,16 +8,15 @@ jmp B
 A:
 irmovl 0, %ecx
 rmmovl %ecx, 0x00001001(%ecx)
-test 0x00001005(%ecx), %ebx
 irmovl 101, %ebx
+rmmovl %ebx, 0x00001005(%ecx)
 ALOOP:
     irmovl 0, %ecx
     rmmovl %ebx, 0x00000f00(%ecx)
-    AWAIT:
-        mrmovl 0x00001005(%ecx), %ebx
-        addl %ebx, %ebx
-    je AWAIT
-    test 0x00001010(%ecx), %edx
+
+    irmovl 1, %ecx
+    subl %ecx, %ebx
+    je EndB
 
     irmovl 1025, %edx
     irmovl 0, %ecx
@@ -47,15 +46,16 @@ ALOOP:
 
     rmmovl %edx, 0x00001005(%edx)
     rmmovl %edx, 0x00001015(%edx)
-
-    irmovl 0, %ecx
-    mrmovl 0x00000f00(%ecx), %ebx
     irmovl 1, %ecx
-    subl %ecx, %ebx
-    je EndB
-
     rmmovl %ecx, 0x00001001(%edx)
+
     irmovl 0, %ecx
+    AWAIT:
+        mrmovl 0x00001005(%ecx), %ebx
+        addl %ebx, %ebx
+    je AWAIT
+    test 0x00001010(%ecx), %edx
+
     mrmovl 0x00000f00(%ecx), %ebx
     irmovl 1, %ecx
     subl %ecx, %ebx

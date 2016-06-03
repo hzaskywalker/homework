@@ -334,11 +334,6 @@ bool_t get_word_val(mem_t m, word_t pos, word_t *dest)
 {
     int i;
     word_t val;
-    /*
-    if (pos < 0 || pos + 4 > m->len){
-        return FALSE;
-    }
-    */
     if(m->msg!=NULL){
         *dest = read_request(m->msg, pos, 4);
         return 1;
