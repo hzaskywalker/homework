@@ -30,13 +30,13 @@ int main(int argc, char* argv[]){
     if(id==1)filename[4] ='1';
     FILE* result = fopen(filename, "w");
     for(i=0;i<10000;++i){
-        int pos = rand() % 100, val=rand() % 100, type = rand()%2;
+        int pos = rand() % 20000, val=rand() % 256, type = rand()%2;
 #ifdef DEBUG
         fprintf(tmpf, "%d %d %d\n", type, pos, val);
         fflush(tmpf);
 #endif
         if(type==0){
-            int readed_val = read_request(msg, pos);
+            int readed_val = read_request(msg, pos, 1);
 #ifdef DEBUG
             if(readed_val!=mem[pos]){
                 printf("Error!");
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]){
         }
         else{
             val = rand() % 10;
-            write_request(msg, pos, val);
+            write_request(msg, pos, val, 1);
 #ifdef DEBUG
             mem[pos] = val;
 #endif

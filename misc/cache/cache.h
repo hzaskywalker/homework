@@ -14,7 +14,7 @@ typedef unsigned char byte_t;
 typedef struct{
     int max_len;
     int* key;
-    int* val;
+    int val[MAX_CACHE_LEN][BYTE_PER_CACHE];
     int* flag;
     int* hit_time;
     volatile byte_t* mem; 
@@ -62,6 +62,10 @@ int extra_bit(int id){
     return id + 17;
 }
 
+int stop_ask_bit(int id){
+    return id + 7;
+}
+
 /*
  * 0 1 2 3
  * M E S I
@@ -75,10 +79,9 @@ int extra_bit(int id){
 #define TYPE_S 2
 #define TYPE_I (-1)
 
-#define ASK_WIRTE_SHARED_STILL_SHARED 0
-
 int find_cache_line(cache_t c, int pos){
-    int i=0;
+    int i;
+    pos = pos/BYTE_PER_CACHE * BYTE_PER_CACHE;
     for(i=0;i<c->num;++i)
         if(c->key[i]==pos && c->flag[i]!=TYPE_I){
             return i;
@@ -86,8 +89,26 @@ int find_cache_line(cache_t c, int pos){
     return TYPE_I;
 }
 
-void memory_write(cache_t c, int pos, int val){
-    c->mem[pos] = val;
+void cache_to_mem(cache_t c, int idx){
+    int i;
+    for(i=0;i<BYTE_PER_CACHE;++i){
+        c->mem[ c->key[idx] + i ] = c->val[idx][i];
+    }
+}
+
+void mem_to_cache(cache_t c, int idx){
+    int i;
+    for(i=0;i<BYTE_PER_CACHE;++i){
+        c->val[idx][i] = c->mem[ c->key[idx] + i ];
+    }
+}
+
+void write_cache_val(cache_t c, int idx, int pos, int val){
+    c->val[idx][pos - c->key[idx]] = val;
+}
+
+int read_cache_val(cache_t c, int idx, int pos){
+    return c->val[idx][ pos - c->key[idx] ];
 }
 
 int new_cache_line(cache_t c, int pos){
@@ -95,27 +116,20 @@ int new_cache_line(cache_t c, int pos){
     //if there is free or Invalid cache, write to it
     //otherwise replace
     int i;
+    pos = pos/BYTE_PER_CACHE * BYTE_PER_CACHE;
+    for(i=0;i<c->num;++i)
+        if(c->flag[i] == TYPE_I){
+            c->hit_time[i] = 0;
+            c->key[i] = pos;
+            return i;
+        }
     if(c->num<c->max_len){
         i = c->num;
         c->flag[i] = TYPE_I;
-        c->hit_time[i] = 1;
+        c->hit_time[i] = 0;
+        c->key[i] = pos;
         c->num++;
         return i;
-    }
-    for(i=0;i<c->num;++i){
-        if(c->flag[i] != TYPE_I && c->key[i] == pos){
-            printf("No need to get new cache line: already in cache!");
-            exit(0);
-        }
-    }
-    for(i=0;i<c->num;++i)
-        if(c->flag[i] == TYPE_I){
-            c->hit_time[i] = 1;
-            return i;
-        }
-    if(c->max_len ==0){
-        printf("You are SB\n");
-        exit(0);
     }
     int min_hit_time = c->hit_time[0], ans=0;
     for(i=0;i<c->num;++i)
@@ -124,30 +138,29 @@ int new_cache_line(cache_t c, int pos){
             min_hit_time = c->hit_time[i];
         }
     if(c->flag[ans] == TYPE_M){
-        // I don't know whether this is safe.
-        memory_write(c, c->key[ans], c->val[ans]);
+        cache_to_mem(c, ans);
     }
+    c->hit_time[ans] = 0;
     c->flag[ans] = TYPE_I;
+    c->key[ans] = pos;
     return ans;
 }
 
 int load_data(cache_t c, int pos){
     //doesn't care about the type and any thing
     //load data from mem
-    int val = c->mem[pos];
     int idx = find_cache_line(c, pos);
     if(idx == TYPE_I){
         idx = new_cache_line(c, pos);
-        c->key[idx] = pos;
-        c->val[idx] = val;
+        mem_to_cache(c, idx);
     }
     else{
-        c->val[idx] = val;
+        exit(0);
     }
     return idx;
 }
 
-void Remote(cache_t c, int pos, int val, int TYPE){
+void Remote(cache_t c, int pos, int TYPE){
     int idx = find_cache_line(c, pos);
     if(idx == TYPE_I){
         if(TYPE==READ){
@@ -157,7 +170,7 @@ void Remote(cache_t c, int pos, int val, int TYPE){
     }
     else if(c->flag[idx] == TYPE_E){
         if(TYPE == READ)
-            c->flag[idx]=TYPE_S;
+            c->flag[idx]= TYPE_S;
         else{
             c->flag[idx] = TYPE_I;
         }
@@ -170,7 +183,7 @@ void Remote(cache_t c, int pos, int val, int TYPE){
         }
     }
     else if(c->flag[idx] == TYPE_M){
-        memory_write(c, c->key[idx], c->val[idx]);
+        cache_to_mem(c, idx);
         if(TYPE == READ){
             c->flag[idx] = TYPE_S;
         }
@@ -185,45 +198,43 @@ int Local(cache_t c, int pos, int val, int TYPE){
     int idx = find_cache_line(c, pos);
     int READ_VAL;
     if(idx == TYPE_I){
+        idx = load_data(c, pos);
         if(TYPE == READ){
             int other_type = c->bus[extra_bit(c->id)];
-            idx = load_data(c, pos);
-            //printf("%d %d %d %d\n", c->id, idx, pos, c->val[idx]);
-            READ_VAL = c->val[idx];
             if(other_type == TYPE_I){
                 c->flag[idx] = TYPE_E;
             }
             else{
                 c->flag[idx] = TYPE_S;
             }
+            READ_VAL = read_cache_val(c, idx, pos);
         }
         else if(TYPE==WRITE){
-            idx = load_data(c, pos);
-            c->val[idx] = val;
+            write_cache_val(c, idx, pos, val);
             c->flag[idx] = TYPE_M;
         }
     }
     else if(c->flag[idx] == TYPE_E){
         if(TYPE==READ)
-            READ_VAL = c->val[idx];
+            READ_VAL = read_cache_val(c, idx, pos);
         else if(TYPE==WRITE){
-            c->val[idx] = val;
+            write_cache_val(c, idx, pos, val);
             c->flag[idx] = TYPE_M;
         }
     }
     else if(c->flag[idx] == TYPE_S){
         if(TYPE==READ)
-            READ_VAL = c->val[idx];
+            READ_VAL = read_cache_val(c, idx, pos);
         else if(TYPE==WRITE){
-            c->val[idx] = val;
+            write_cache_val(c, idx, pos, val);
             c->flag[idx] = TYPE_M;
         }
     }
     else if(c->flag[idx] == TYPE_M){
         if(TYPE==READ)
-            READ_VAL = c->val[idx];
+            READ_VAL = read_cache_val(c, idx, pos);
         else if(TYPE==WRITE){
-            c->val[idx] = val;
+            write_cache_val(c, idx, pos, val);
         }
     }
 #ifdef DEBUG
@@ -233,6 +244,7 @@ int Local(cache_t c, int pos, int val, int TYPE){
     fprintf(tmpf, "%d %d %d %d\n", c->id, TYPE, pos, val);
     fclose(tmpf);
 
+    /*
     tmpf = fopen("mem_tmp.txt", "a");
     int i=0;
     for(i=0;i<10;i++){
@@ -240,6 +252,7 @@ int Local(cache_t c, int pos, int val, int TYPE){
     }
     fprintf(tmpf, "\n");
     fclose(tmpf);
+    */
 #endif
     c->hit_time[idx] += 1;
     if(TYPE==READ)
@@ -256,58 +269,35 @@ void answer(cache_t c){
             c->bus[ask_bit(c->id^1)] = 0;
             int TYPE = c->bus[ask_type_bit(c->id^1)];
             int pos = c->bus[ask_pos_bit(c->id^1)];
-            int val = c->bus[ask_val_bit(c->id^1)];
-            Remote(c, pos, val, TYPE);
+            Remote(c, pos, TYPE);
             c->bus[answer_bit(c->id)] = 1;
+            while(c->bus[stop_ask_bit(c->id^1)]){
+            }
+            c->bus[answer_bit(c->id)] = 0;
         }
     }
 }
 
-int ask(cache_t c, int pos, int val, int TYPE){
-    int idx = find_cache_line(c, pos);
-    int onlylocal = 0, ans=0;
-    if(idx!=TYPE_I && 
-            (c->flag[idx] == TYPE_M || 
-             c->flag[idx] == TYPE_E || 
-             (c->flag[idx] == TYPE_S && TYPE == READ )))
-        onlylocal = 1;
-    if(c->bus[lock_bit(c->id^1)] == 0 || onlylocal){
-        if(TYPE!=TEST){
-            ans = Local(c, pos, val, TYPE);
-            return ans;
-        }
-        else{
-            /*
-             * here is a bug
-             * ....
-             * sad
-             */
-            int ans = Local(c, pos, val, READ);
-            Local(c, pos, ans+1, WRITE);
-            return ans;
-        }
-    }
-    int askNum = 1+(TYPE==TEST)*7;
+int ask(cache_t c, int pos, int val, int TYPE, int length){
+    int ans=0;
+    int askNum = length;
+    if(TYPE == TEST)
+        askNum *= 2;
 
     while(askNum){
-        int newtype = TYPE, newpos = pos, newval = val;
-        if(TYPE==TEST){
-            int now = askNum;
-            newtype = (now>4)?READ: WRITE;
-            if(now>4){
-                newpos = pos + now - 5;
-            }
-            else{
-                newpos = pos + now-1;
-            }
-            if(now<=4){
-                newval = ((ans+1)>>((now-1)*8))%256;
-            }
+        int newtype = (TYPE==TEST)?(askNum>length?READ:WRITE):TYPE;
+        int delta = (askNum-1)%length;
+        int newpos = pos + delta;
+        if(TYPE==TEST && newtype == WRITE){
+            val = ans+1;
         }
+        int newval = (val>>(delta*8))%256;
+
         c->bus[ask_pos_bit(c->id)] = newpos;
         c->bus[ask_val_bit(c->id)] = newval;
         c->bus[ask_type_bit(c->id)] = newtype;
         c->bus[answer_bit(c->id^1)] = 0;
+        c->bus[stop_ask_bit(c->id)] = 1;
         c->bus[ask_bit(c->id)] = askNum;
 
         while(c->bus[answer_bit(c->id^1)]==0 && c->bus[lock_bit(c->id^1)]){
@@ -316,21 +306,24 @@ int ask(cache_t c, int pos, int val, int TYPE){
             }
         }
         int tmp = Local(c, newpos, newval, newtype);
-        if(newtype == READ){
+        if(newtype == READ)
             ans = ans*256 + tmp;
+        c->bus[stop_ask_bit(c->id)] = 0;
+        c->bus[ask_bit(c->id)]=0;
+        while(c->bus[answer_bit(c->id^1)]){
         }
-        askNum -= 1;
+        askNum--;
     }
     return ans;
 }
 
-int ONE_STEP(cache_t c, int pos, int val, int TYPE){
-    if(pos<0 || pos >= MAX_MEM_POS){
+int ONE_STEP(cache_t c, int pos, int val, int TYPE, int length){
+    if(pos<0 || pos >= MAX_MEM_POS/BYTE_PER_CACHE * BYTE_PER_CACHE){
         printf("pos for cache is greater than maximum memory %d or less than 0: %d\n", MAX_MEM_POS, pos);
         exit(0);
     }
     answer(c);
-    int ans = ask(c, pos, val, TYPE);
+    int ans = ask(c, pos, val, TYPE, length);
     return ans;
 }
 
@@ -339,10 +332,8 @@ cache_t init_cache(int len, int id, volatile byte_t* mem, volatile int* bus){
     cache_t result = (cache_t) malloc(sizeof(cache_rec));
     result->max_len = len;
     result->key =(int*)calloc(len, sizeof(int));
-    result->val =(int*)calloc(len, sizeof(int));
     result->flag =(int*)calloc(len, sizeof(int));
     result->hit_time =(int*)calloc(len, sizeof(int));
-    result->val[0]=0;
 
     result->bus = bus;
     result->mem = mem;
@@ -352,25 +343,28 @@ cache_t init_cache(int len, int id, volatile byte_t* mem, volatile int* bus){
     return result;
 }
 
-int read_request(volatile int* msg, int pos){
+int read_request(volatile int* msg, int pos, int length){
     msg[1] = pos;
     msg[0] = 1;
+    msg[4] = length;
     while(msg[0]){
     }
     return msg[3];
 }
 
-void write_request(volatile int* msg, int pos, int val){
+void write_request(volatile int* msg, int pos, int val, int length){
     msg[1] = pos;
     msg[2] = val;
     msg[0] = 2;
+    msg[4] = length;
     while(msg[0]){
     }
 }
 
-int test_request(volatile int* msg, int pos){
+int test_request(volatile int* msg, int pos, int length){
     msg[1] = pos;
     msg[0] = 3;
+    msg[4] = length;
     while(msg[0]){
     }
     return msg[3];

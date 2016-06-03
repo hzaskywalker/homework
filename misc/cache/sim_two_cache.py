@@ -1,6 +1,6 @@
 f = open('cache_record.txt', 'r').readlines()
 
-mem = [0] * 10000
+mem = [0] * 30000
 result = [[], []]
 
 for lines in f:

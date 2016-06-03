@@ -291,7 +291,7 @@ int load_mem(mem_t m, FILE *infile, int report_error, int START_PLACE)
             if(m->msg==NULL)
                 m->contents[bytepos++] = byte;
             else{
-                write_request(m->msg, bytepos, byte);
+                write_request(m->msg, bytepos, byte, 1);
                 bytepos++;
             }
             byte_cnt++;
@@ -316,7 +316,7 @@ bool_t get_byte_val(mem_t m, word_t pos, byte_t *dest)
     if(m->msg==NULL)
         *dest = m->contents[pos];
     else{
-        *dest = read_request(m->msg, pos);
+        *dest = read_request(m->msg, pos, 1);
     }
     return TRUE;
 }
@@ -326,7 +326,7 @@ int test_memory(mem_t m, word_t pos){
         printf("something is wrong when test\n");
         exit(0);
     }
-    int ans=test_request(m->msg, pos);
+    int ans=test_request(m->msg, pos, 4);
     return ans;
 }
 
@@ -339,11 +339,15 @@ bool_t get_word_val(mem_t m, word_t pos, word_t *dest)
         return FALSE;
     }
     */
+    if(m->msg!=NULL){
+        *dest = read_request(m->msg, pos, 4);
+        return 1;
+    }
     val = 0;
     for (i = 0; i < 4; i++){
         int ans;
         if(m->msg!=NULL){
-            ans = read_request(m->msg, pos+i);
+            ans = read_request(m->msg, pos+i, 1);
         }
         else{
             ans = m->contents[pos+i];
@@ -363,7 +367,7 @@ bool_t set_byte_val(mem_t m, word_t pos, byte_t val)
     if(m->msg==NULL)
         m->contents[pos] = val;
     else{
-        write_request(m->msg, pos, (int)val);
+        write_request(m->msg, pos, (int)val, 1);
     }
     return TRUE;
 }
@@ -375,13 +379,17 @@ bool_t set_word_val(mem_t m, word_t pos, word_t val)
     if (pos < 0 || pos + 4 > m->len)
         return FALSE;
         */
+    if(m->msg!=NULL){
+        write_request(m->msg, pos, val, 4);
+        return 1;
+    }
     for (i = 0; i < 4; i++) {
         int nv = val&0xFF;
         if(m->msg==NULL)
             m->contents[pos+i] = nv;
         else{
 //            printf("%d %d\n", pos, nv);
-            write_request(m->msg, pos+i, (int)nv);
+            write_request(m->msg, pos+i, (int)nv, 1);
         }
         val >>= 8;
     }

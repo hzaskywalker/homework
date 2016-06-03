@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
 
     cache_t c = init_cache(MAX_CACHE_LEN, id, mem, bus);
 
-    int msg_id = shmget(MSG_NAME(id), 4 * sizeof(int), IPC_CREAT|0666);
+    int msg_id = shmget(MSG_NAME(id), 16* sizeof(int), IPC_CREAT|0666);
     volatile int* msg = shmat(msg_id, 0, 0);
     if(msg == (int*) -1){
         printf("msg initialize failed: %p\n", msg);
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
 #ifdef DEBUG
 //                printf("%d READ: %d\n", id, pos);
 #endif
-                int ans = ONE_STEP(c, pos, 0, READ);
+                int ans = ONE_STEP(c, pos, 0, READ, msg[4]);
                 msg[3] = ans;
 
                 msg[0] = 0;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
             else if(msg[0] ==2){
                 int pos = msg[1];
                 int val = msg[2];
-                ONE_STEP(c, pos, val, WRITE);
+                ONE_STEP(c, pos, val, WRITE, msg[4]);
                 msg[0] = 0;
             }
             else if(msg[0] ==3){
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]){
                 //otherwise no change
                 //element opr
                 int pos = msg[1];
-                msg[3] = ONE_STEP(c, pos, 0, TEST);
+                msg[3] = ONE_STEP(c, pos, 0, TEST, msg[4]);
                 msg[0] = 0;
             }
         }
